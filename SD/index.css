@@ -1080,6 +1080,17 @@
 .mini-tool-shell .tool-window-related,
 .mini-tool-shell .desktop-only { display: none; }
 
+.mini-tool-shell .mini-compatibility-notice {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #e5c98f;
+  border-radius: 12px;
+  color: #78551d;
+  background: #fff7df;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 @media (min-width: 560px) {
   .mini-tool-shell__main { padding-right: 20px; padding-left: 20px; }
   .mini-tool-grid, .mini-special-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

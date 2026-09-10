@@ -8,6 +8,7 @@ import { ToolLink } from './ToolLink';
 import { PageSeo } from './PageSeo';
 import { buildToolMetadata } from '../seo/pageMetadata';
 import { TOOL_REDIRECTS } from '../tools/redirects';
+import { MiniCompatibilityNotice } from './MiniCompatibilityNotice';
 import {
   TOOL_WINDOW_AD_CLASS,
   getToolComponentShellClass,
@@ -267,6 +268,7 @@ export default function ToolWindow() {
       <main className="flex-1 overflow-auto">
         <div className={getToolWindowContentClass(tool.category)}>
           {/* Tool Component */}
+          <MiniCompatibilityNotice toolId={tool.id} />
           <div className={getToolComponentShellClass(tool.category)}>
             <ToolErrorBoundary toolName={tool.name} onClose={handleClose}>
               <Suspense
