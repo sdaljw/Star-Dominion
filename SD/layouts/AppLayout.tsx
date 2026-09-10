@@ -5,7 +5,9 @@ import { TOOLS } from '../tools/registry';
 import { MouseParticles } from '../components/MouseParticles';
 import { AccountMenu } from '../components/AccountMenu';
 import { ThemeControl } from '../components/ThemeControl';
+import { getMiniMode } from '../lib/miniMode';
 import { SidebarCatalog } from './SidebarCatalog';
+import { MiniToolLayout } from './MiniToolLayout';
 
 // 侧边栏时钟组件
 const SidebarClock: React.FC = () => {
@@ -47,7 +49,7 @@ const BackToTop: React.FC = () => {
   );
 };
 
-export const AppLayout: React.FC = () => {
+const DesktopAppLayout: React.FC = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -171,5 +173,9 @@ export const AppLayout: React.FC = () => {
     </div>
   );
 };
+
+export const AppLayout: React.FC = () => (
+  getMiniMode() ? <MiniToolLayout /> : <DesktopAppLayout />
+);
 
 export default AppLayout;

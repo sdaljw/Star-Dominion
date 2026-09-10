@@ -1,9 +1,11 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, type ReactNode } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { AppLayout } from './layouts/AppLayout';
 import { ToolRunnerProvider } from './components/ToolRunner';
 import { HomePage } from './pages/HomePage';
+import MiniToolsPage from './pages/MiniToolsPage';
 import { ScrollToTop } from './layouts/ScrollToTop';
+import { getMiniMode } from './lib/miniMode';
 
 const ToolboxPage = lazy(() => import('./pages/ToolboxPage').then(module => ({ default: module.ToolboxPage })));
 const TranslationPage = lazy(() => import('./pages/TranslationPage').then(module => ({ default: module.TranslationPage })));
@@ -22,6 +24,17 @@ const ToolWindow = lazy(() => import('./components/ToolWindow'));
 const GamesPage = lazy(() => import('./pages/GamesPage').then(module => ({ default: module.GamesPage })));
 const GamePage = lazy(() => import('./pages/GamePage').then(module => ({ default: module.GamePage })));
 
+function MiniModeBlocked({ children }: { children: ReactNode }) {
+  return getMiniMode() ? <Navigate replace to="/?mini=1" /> : <>{children}</>;
+}
+
+function CategoryEntry() {
+  const { categoryId = '' } = useParams();
+  return getMiniMode()
+    ? <Navigate replace to={`/gj?category=${encodeURIComponent(categoryId)}`} />
+    : <CategoryPage />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -31,30 +44,30 @@ export default function App() {
           <Routes>
             {/* 主应用布局 */}
             <Route element={<AppLayout />}>
-              <Route index element={<HomePage />} />
+              <Route index element={getMiniMode() ? <MiniToolsPage /> : <HomePage />} />
               <Route path="/gj" element={<ToolboxPage />} />
               <Route path="/fy" element={<TranslationPage />} />
-              <Route path="/bp" element={<Stm32Page />} />
-              <Route path="/ai" element={<AIAgentPage />} />
-              <Route path="/wuwa" element={<ShouAnRenPage />} />
-              <Route path="/reports" element={<ReportsPage />} />
-              <Route path="/reports/github" element={<GitHubReportsPage />} />
-              <Route path="/reports/ai" element={<AIReportsPage />} />
-              <Route path="/reports/news" element={<NewsEventsPage />} />
-              <Route path="/reports/briefing" element={<AIBriefingPage />} />
-              <Route path="/auth/login" element={<LoginPage />} />
               <Route path="/games" element={<GamesPage />} />
               <Route path="/games/:gameId" element={<GamePage />} />
 
               {/* 工具详情页沿用主应用壳层，保持左侧工具目录可见 */}
               <Route path="/tool/:toolId" element={<ToolWindow />} />
+              <Route path="/bp" element={<MiniModeBlocked><Stm32Page /></MiniModeBlocked>} />
+              <Route path="/ai" element={<MiniModeBlocked><AIAgentPage /></MiniModeBlocked>} />
+              <Route path="/wuwa" element={<MiniModeBlocked><ShouAnRenPage /></MiniModeBlocked>} />
+              <Route path="/reports" element={<MiniModeBlocked><ReportsPage /></MiniModeBlocked>} />
+              <Route path="/reports/github" element={<MiniModeBlocked><GitHubReportsPage /></MiniModeBlocked>} />
+              <Route path="/reports/ai" element={<MiniModeBlocked><AIReportsPage /></MiniModeBlocked>} />
+              <Route path="/reports/news" element={<MiniModeBlocked><NewsEventsPage /></MiniModeBlocked>} />
+              <Route path="/reports/briefing" element={<MiniModeBlocked><AIBriefingPage /></MiniModeBlocked>} />
+              <Route path="/auth/login" element={<MiniModeBlocked><LoginPage /></MiniModeBlocked>} />
             </Route>
 
             {/* 分类专题页 */}
-            <Route path="/category/:categoryId" element={<CategoryPage />} />
+            <Route path="/category/:categoryId" element={<CategoryEntry />} />
 
             {/* 独立工作区 */}
-            <Route path="/stm32/*" element={<Stm32Window />} />
+            <Route path="/stm32/*" element={<MiniModeBlocked><Stm32Window /></MiniModeBlocked>} />
           </Routes>
         </Suspense>
       </ToolRunnerProvider>
