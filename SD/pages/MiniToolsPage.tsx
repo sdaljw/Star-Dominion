@@ -23,7 +23,6 @@ export function MiniToolsPage() {
     : CATEGORIES;
 
   const specialEntries = [
-    { href: '/stock/', name: '股票研究', description: '股票行情、策略和研究工具', icon: 'TrendingUp', external: true },
     { href: '/games', name: '趣味游戏', description: '小游戏和本地 AI 对战', icon: 'Gamepad2', external: false },
   ] as const;
 

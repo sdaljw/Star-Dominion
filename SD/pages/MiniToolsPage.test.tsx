@@ -19,7 +19,7 @@ describe('MiniToolsPage', () => {
     expect(screen.getByRole('searchbox', { name: '搜索工具' })).toBeTruthy();
     expect(screen.getByText('PDF 工具')).toBeTruthy();
     expect(screen.getByRole('link', { name: /打开 JSON 格式化/ })).toBeTruthy();
-    expect(screen.getByRole('link', { name: /股票研究/ })).toBeTruthy();
+    expect(screen.queryByRole('link', { name: /股票研究/ })).toBeNull();
     expect(screen.getByRole('link', { name: /趣味游戏/ })).toBeTruthy();
     expect(screen.queryByText('研报中心')).toBeNull();
     expect(screen.queryByText('个人项目')).toBeNull();
