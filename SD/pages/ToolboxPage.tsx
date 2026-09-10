@@ -27,8 +27,10 @@ import { TOOLBOX_CARD_DESCRIPTION_CLASS, TOOLBOX_CARD_TITLE_CLASS } from './tool
 import { getToolSuggestions } from './toolSuggestions';
 import { PageSeo } from '../components/PageSeo';
 import { TOOLBOX_METADATA } from '../seo/pageMetadata';
+import { getMiniMode } from '../lib/miniMode';
 
 export const ToolboxPage: React.FC = () => {
+  const miniMode = getMiniMode();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeAssessmentGroup, setActiveAssessmentGroup] = useState<AssessmentGroup | null>(null);
@@ -519,7 +521,7 @@ export const ToolboxPage: React.FC = () => {
         </div>
       )}
 
-      {displayTools.length > 0 && <AdSlot name="tools-inline" className="mt-8" />}
+      {displayTools.length > 0 && !miniMode && <AdSlot name="tools-inline" className="mt-8" />}
       </div>
     </>
   );
