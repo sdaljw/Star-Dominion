@@ -9,6 +9,7 @@ import { PageSeo } from './PageSeo';
 import { buildToolMetadata } from '../seo/pageMetadata';
 import { TOOL_REDIRECTS } from '../tools/redirects';
 import { MiniCompatibilityNotice } from './MiniCompatibilityNotice';
+import { getMiniMode } from '../lib/miniMode';
 import {
   TOOL_WINDOW_AD_CLASS,
   getToolComponentShellClass,
@@ -180,6 +181,7 @@ const TOOL_USAGE: Record<string, { steps: string[]; tips: string[] }> = {
 export default function ToolWindow() {
   const { toolId } = useParams<{ toolId: string }>();
   const navigate = useNavigate();
+  const miniMode = getMiniMode();
   const redirectId = toolId ? TOOL_REDIRECTS[toolId] : undefined;
   const tool = toolId ? getToolById(redirectId ?? toolId) : null;
   const handleClose = () => navigate(tool ? `/category/${tool.category}` : '/gj');
@@ -393,9 +395,11 @@ export default function ToolWindow() {
         </div>
 
         {/* 结果页广告位 */}
-        <div className={TOOL_WINDOW_AD_CLASS}>
-          <AdSlot name="tool-result" />
-        </div>
+        {!miniMode && (
+          <div className={TOOL_WINDOW_AD_CLASS}>
+            <AdSlot name="tool-result" />
+          </div>
+        )}
       </main>
 
       {/* Footer */}

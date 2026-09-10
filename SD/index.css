@@ -1018,6 +1018,9 @@
 .mini-tools-home__hero,
 .mini-tools-home__categories,
 .mini-tools-home__list {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -1054,20 +1057,20 @@
 }
 
 .mini-tools-home__search svg { flex: 0 0 auto; width: 18px; color: var(--text-soft); }
-.mini-tools-home__search input { width: 100%; min-height: 46px; border: 0; outline: 0; color: var(--text); background: transparent; }
+.mini-tools-home__search input { width: 100%; min-width: 0; min-height: 46px; border: 0; outline: 0; color: var(--text); background: transparent; }
 
 .mini-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .mini-section-heading span { color: var(--text-soft); font-size: 12px; }
 
-.mini-category-scroller { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
+.mini-category-scroller { display: flex; min-width: 0; gap: 8px; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
 .mini-category-scroller::-webkit-scrollbar { display: none; }
 
 .mini-category-chip { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 6px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); background: var(--surface-muted); font-size: 12px; text-decoration: none; }
 .mini-category-chip svg { width: 15px; height: 15px; color: var(--accent-strong); }
 .mini-category-chip small { color: var(--text-soft); }
 
-.mini-tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.mini-special-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+.mini-tool-grid { display: grid; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.mini-special-grid { display: grid; min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
 .mini-tool-card { display: grid; min-width: 0; gap: 7px; padding: 13px; border: 1px solid var(--border); border-radius: 16px; color: var(--text); background: var(--surface-muted); text-decoration: none; }
 .mini-tool-card:active { transform: translateY(1px); }
 .mini-tool-card__icon { display: inline-grid; width: 32px; height: 32px; place-items: center; border-radius: 10px; color: #fff; }
