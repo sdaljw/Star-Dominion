@@ -1,0 +1,23 @@
+<view class="webview-page">
+  <web-view
+    wx:if="{{status !== 'error'}}"
+    src="{{src}}"
+    bindload="onWebViewLoad"
+    binderror="onWebViewError"
+  ></web-view>
+
+  <cover-view wx:if="{{status === 'loading'}}" class="state-mask">
+    <cover-view class="state-card">
+      <cover-view class="state-title">工具箱加载中</cover-view>
+      <cover-view class="state-description">正在打开工具界面，请稍候</cover-view>
+    </cover-view>
+  </cover-view>
+
+  <cover-view wx:if="{{status === 'error'}}" class="state-mask">
+    <cover-view class="state-card">
+      <cover-view class="state-title">页面加载失败</cover-view>
+      <cover-view class="state-description">请检查网络或稍后重试</cover-view>
+      <cover-view class="retry-button" bindtap="retry">重新加载</cover-view>
+    </cover-view>
+  </cover-view>
+</view>
