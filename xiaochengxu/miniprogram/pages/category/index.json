@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "工具分类"
+  "navigationBarTitleText": "工具分类",
+  "usingComponents": {
+    "search-bar": "/components/common/search-bar/search-bar",
+    "tool-card": "/components/common/tool-card/tool-card"
+  }
 }

@@ -4,17 +4,7 @@
       <view class="eyebrow">逐梦工具箱 · 原生小程序版</view>
       <view class="hero-title">工具箱</view>
       <view class="hero-description">常用工具，打开即用，数据优先留在当前设备。</view>
-      <view class="search-box">
-        <text class="search-icon">⌕</text>
-        <input
-          class="search-input"
-          type="text"
-          value="{{query}}"
-          placeholder="搜索工具名称或关键词"
-          confirm-type="search"
-          bindinput="onSearchInput"
-        />
-      </view>
+      <search-bar value="{{query}}" bindchange="onSearchInput" />
     </view>
 
     <view class="section-heading">
@@ -34,24 +24,32 @@
       </view>
     </scroll-view>
 
-    <view class="section-heading section-heading-tools">
+    <view wx:if="{{query}}" class="section-heading section-heading-tools">
+      <text class="section-title">搜索结果</text>
+      <text class="section-count">{{searchResults.length}} 个工具</text>
+    </view>
+    <view wx:if="{{query}}" class="tool-grid">
+      <tool-card
+        wx:for="{{searchResults}}"
+        wx:key="id"
+        tool="{{item}}"
+        bindtap="openTool"
+      />
+    </view>
+
+    <view wx:if="{{!query}}" class="section-heading section-heading-tools">
       <text class="section-title">常用工具</text>
       <text class="section-count">原生运行</text>
     </view>
-    <view class="tool-grid">
-      <view
+    <view wx:if="{{!query}}" class="tool-grid">
+      <tool-card
         wx:for="{{featuredTools}}"
         wx:key="id"
-        class="tool-card"
-        data-id="{{item.id}}"
+        tool="{{item}}"
         bindtap="openTool"
-      >
-        <view class="tool-icon">✦</view>
-        <text class="tool-name">{{item.name}}</text>
-        <text class="tool-description">{{item.description}}</text>
-      </view>
+      />
     </view>
 
-    <view wx:if="{{query}}" class="search-hint">输入“{{query}}”后，进入全部工具搜索。</view>
+    <view wx:if="{{query && searchResults.length === 0}}" class="search-hint">没有找到匹配工具，换个关键词试试。</view>
   </view>
 </scroll-view>

@@ -5,9 +5,17 @@
       <text class="tool-page-title">{{title}}</text>
       <text class="tool-page-description">{{description}}</text>
     </view>
-    <view wx:if="{{status === 'adapting'}}" class="migration-card">
+    <view wx:if="{{status === 'ready'}}" class="ready-card">
+      <text class="ready-title">工具已就绪</text>
+      <text class="ready-description">原生界面正在接入具体功能，请从首页选择其他已完成工具。</text>
+    </view>
+    <view wx:elif="{{status === 'adapting'}}" class="migration-card">
       <text class="migration-title">原生工具正在迁移</text>
       <text class="migration-description">工具界面和逻辑会逐批改为原生小程序，完成后即可在这里使用。</text>
+    </view>
+    <view wx:else class="migration-card">
+      <text class="migration-title">暂不支持此工具</text>
+      <text class="migration-description">该工具依赖桌面端能力，请在网站电脑版使用。</text>
     </view>
   </view>
 </scroll-view>

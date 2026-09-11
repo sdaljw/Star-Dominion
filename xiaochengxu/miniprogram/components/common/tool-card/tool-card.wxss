@@ -1,0 +1,42 @@
+.tool-card {
+  min-width: 0;
+  padding: 22rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 22rpx;
+  background: #fff;
+  box-shadow: 0 10rpx 24rpx rgba(122, 66, 27, 0.06);
+}
+
+.tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62rpx;
+  height: 62rpx;
+  border-radius: 18rpx;
+  color: #fff;
+  background: linear-gradient(135deg, #5f6f42, #9a5a28);
+  font-size: 32rpx;
+}
+
+.tool-name {
+  display: block;
+  margin-top: 18rpx;
+  overflow: hidden;
+  color: #2f241b;
+  font-size: 27rpx;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-description {
+  display: -webkit-box;
+  margin-top: 10rpx;
+  overflow: hidden;
+  color: #806b59;
+  font-size: 22rpx;
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}

@@ -1,0 +1,31 @@
+import { describe, expect, it } from 'vitest';
+import {
+  NATIVE_CATEGORIES,
+  NATIVE_TOOLS,
+  getNativeToolById,
+  searchNativeTools,
+} from '../xiaochengxu/miniprogram/data/toolRegistry';
+
+describe('native tool registry', () => {
+  it('has unique tool ids and valid category references', () => {
+    const ids = NATIVE_TOOLS.map((tool) => tool.id);
+    const categoryIds = new Set(NATIVE_CATEGORIES.map((category) => category.id));
+
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(NATIVE_TOOLS.every((tool) => categoryIds.has(tool.category))).toBe(true);
+    expect(NATIVE_TOOLS.every((tool) => tool.name.trim() && tool.route.startsWith('/pages/tool/'))).toBe(true);
+  });
+
+  it('contains the first native tools without exposing stock or mouse-only tools', () => {
+    expect(getNativeToolById('json-format')?.status).toBe('ready');
+    expect(getNativeToolById('bmi-calculator')?.status).toBe('ready');
+    expect(getNativeToolById('stock')).toBeUndefined();
+    expect(NATIVE_TOOLS.filter((tool) => tool.category === 'mouse')).toHaveLength(0);
+  });
+
+  it('searches names, descriptions, and tags case-insensitively', () => {
+    expect(searchNativeTools('JSON').map((tool) => tool.id)).toContain('json-format');
+    expect(searchNativeTools('密码').map((tool) => tool.id)).toContain('password-gen');
+    expect(searchNativeTools('not-a-tool')).toHaveLength(0);
+  });
+});

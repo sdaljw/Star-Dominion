@@ -1,3 +1,7 @@
 {
-  "navigationBarTitleText": "逐梦工具箱"
+  "navigationBarTitleText": "逐梦工具箱",
+  "usingComponents": {
+    "search-bar": "/components/common/search-bar/search-bar",
+    "tool-card": "/components/common/tool-card/tool-card"
+  }
 }

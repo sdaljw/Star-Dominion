@@ -56,47 +56,12 @@ page {
   line-height: 1.6;
 }
 
-.tool-list {
+.page-heading .search-box {
+  margin-top: 24rpx;
+}
+
+.tool-grid {
   display: grid;
-  gap: 14rpx;
-}
-
-.tool-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24rpx;
-  border: 1rpx solid #ead9c3;
-  border-radius: 20rpx;
-  background: #fff;
-}
-
-.tool-row-main {
-  min-width: 0;
-}
-
-.tool-row-name,
-.tool-row-description {
-  display: block;
-}
-
-.tool-row-name {
-  color: #2f241b;
-  font-size: 28rpx;
-  font-weight: 700;
-}
-
-.tool-row-description {
-  margin-top: 8rpx;
-  overflow: hidden;
-  color: #806b59;
-  font-size: 23rpx;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tool-row-arrow {
-  margin-left: 20rpx;
-  color: #9a5a28;
-  font-size: 42rpx;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
 }

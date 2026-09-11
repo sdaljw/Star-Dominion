@@ -1,22 +1,19 @@
+import { NATIVE_CATEGORIES, NATIVE_TOOLS, searchNativeTools } from '../../data/toolRegistry';
+
 Page({
   data: {
     query: '',
-    categories: [
-      { id: 'dev', name: '开发工具', count: 29 },
-      { id: 'calc', name: '计算器', count: 16 },
-      { id: 'text', name: '文本工具', count: 9 },
-      { id: 'fun', name: '趣味工具', count: 7 },
-    ],
-    featuredTools: [
-      { id: 'json-format', name: 'JSON 格式化', description: '格式化、压缩和校验 JSON' },
-      { id: 'bmi-calculator', name: 'BMI 计算器', description: '输入身高体重快速计算 BMI' },
-      { id: 'password-gen', name: '密码生成器', description: '生成安全随机密码' },
-      { id: 'word-count', name: '字数统计', description: '统计字符、词语和行数' },
-    ],
+    categories: NATIVE_CATEGORIES.slice(0, 8).map((category) => ({
+      ...category,
+      count: NATIVE_TOOLS.filter((tool) => tool.category === category.id && tool.status === 'ready').length,
+    })),
+    featuredTools: NATIVE_TOOLS.slice(0, 4),
+    searchResults: [] as typeof NATIVE_TOOLS,
   },
 
   onSearchInput(event: WechatMiniprogram.Input) {
-    this.setData({ query: event.detail.value });
+    const query = event.detail.value;
+    this.setData({ query, searchResults: searchNativeTools(query) });
   },
 
   openCategory(event: WechatMiniprogram.CustomEvent<WechatMiniprogram.IAnyObject>) {

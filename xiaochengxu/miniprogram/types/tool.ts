@@ -1,0 +1,22 @@
+export type NativeToolCapability = 'local' | 'request' | 'file' | 'camera' | 'audio' | 'unsupported';
+
+export type NativeToolStatus = 'ready' | 'adapting' | 'desktop-only';
+
+export interface NativeToolDefinition {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  capability: NativeToolCapability;
+  route: string;
+  status: NativeToolStatus;
+  tags: string[];
+}
+
+export interface NativeCategoryDefinition {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
