@@ -1,0 +1,102 @@
+page {
+  height: 100%;
+}
+
+.page-scroll {
+  height: 100vh;
+}
+
+.category-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 36rpx 28rpx 64rpx;
+}
+
+.page-heading {
+  padding: 28rpx 4rpx 24rpx;
+}
+
+.page-title {
+  display: block;
+  color: #2f241b;
+  font-size: 48rpx;
+  font-weight: 700;
+}
+
+.page-description {
+  display: block;
+  margin-top: 12rpx;
+  color: #806b59;
+  font-size: 25rpx;
+}
+
+.empty-card {
+  padding: 54rpx 32rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+  text-align: center;
+}
+
+.empty-title,
+.empty-description {
+  display: block;
+}
+
+.empty-title {
+  color: #2f241b;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.empty-description {
+  margin-top: 16rpx;
+  color: #806b59;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.tool-list {
+  display: grid;
+  gap: 14rpx;
+}
+
+.tool-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.tool-row-main {
+  min-width: 0;
+}
+
+.tool-row-name,
+.tool-row-description {
+  display: block;
+}
+
+.tool-row-name {
+  color: #2f241b;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.tool-row-description {
+  margin-top: 8rpx;
+  overflow: hidden;
+  color: #806b59;
+  font-size: 23rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-row-arrow {
+  margin-left: 20rpx;
+  color: #9a5a28;
+  font-size: 42rpx;
+}

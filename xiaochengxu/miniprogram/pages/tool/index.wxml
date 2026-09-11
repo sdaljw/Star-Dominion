@@ -1,0 +1,13 @@
+<scroll-view class="page-scroll" scroll-y type="list">
+  <view class="tool-page">
+    <view class="tool-page-header">
+      <button class="back-button" size="mini" bindtap="goBack">‹ 返回</button>
+      <text class="tool-page-title">{{title}}</text>
+      <text class="tool-page-description">{{description}}</text>
+    </view>
+    <view wx:if="{{status === 'adapting'}}" class="migration-card">
+      <text class="migration-title">原生工具正在迁移</text>
+      <text class="migration-description">工具界面和逻辑会逐批改为原生小程序，完成后即可在这里使用。</text>
+    </view>
+  </view>
+</scroll-view>

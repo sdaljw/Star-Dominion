@@ -1,0 +1,21 @@
+<scroll-view class="page-scroll" scroll-y type="list">
+  <view class="category-page">
+    <view class="page-heading">
+      <text class="page-title">{{title}}</text>
+      <text class="page-description">选择一个工具开始使用</text>
+    </view>
+    <view wx:if="{{tools.length === 0}}" class="empty-card">
+      <text class="empty-title">工具正在迁移</text>
+      <text class="empty-description">这个分类会在原生版本迁移完成后显示可用工具。</text>
+    </view>
+    <view wx:else class="tool-list">
+      <view wx:for="{{tools}}" wx:key="id" class="tool-row" data-id="{{item.id}}" bindtap="openTool">
+        <view class="tool-row-main">
+          <text class="tool-row-name">{{item.name}}</text>
+          <text class="tool-row-description">{{item.description}}</text>
+        </view>
+        <text class="tool-row-arrow">›</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

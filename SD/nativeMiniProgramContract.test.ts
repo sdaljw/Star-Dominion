@@ -1,0 +1,27 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+
+const miniRoot = resolve(fileURLToPath(new URL('../xiaochengxu/miniprogram/', import.meta.url)));
+
+function sourceFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = resolve(directory, entry.name);
+    return entry.isDirectory() ? sourceFiles(path) : /\.(ts|wxml|wxss|json)$/.test(entry.name) ? [path] : [];
+  });
+}
+
+describe('native mini program shell', () => {
+  it('declares native home, category, and tool pages', () => {
+    const app = JSON.parse(readFileSync(resolve(miniRoot, 'app.json'), 'utf8')) as { pages: string[] };
+    expect(app.pages).toEqual(['pages/home/index', 'pages/category/index', 'pages/tool/index']);
+  });
+
+  it('contains no WebView entry or mini-mode website URL', () => {
+    const source = sourceFiles(miniRoot).map((path) => readFileSync(path, 'utf8')).join('\n');
+    expect(source).not.toContain('<web-view');
+    expect(source).not.toContain('WEB_ENTRY_URL');
+    expect(source).not.toContain('?mini=1');
+  });
+});

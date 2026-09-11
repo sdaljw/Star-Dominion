@@ -1,0 +1,57 @@
+<scroll-view class="page-scroll" scroll-y type="list">
+  <view class="home-page">
+    <view class="hero-card">
+      <view class="eyebrow">逐梦工具箱 · 原生小程序版</view>
+      <view class="hero-title">工具箱</view>
+      <view class="hero-description">常用工具，打开即用，数据优先留在当前设备。</view>
+      <view class="search-box">
+        <text class="search-icon">⌕</text>
+        <input
+          class="search-input"
+          type="text"
+          value="{{query}}"
+          placeholder="搜索工具名称或关键词"
+          confirm-type="search"
+          bindinput="onSearchInput"
+        />
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <text class="section-title">工具分类</text>
+      <text class="section-count">18 个分类</text>
+    </view>
+    <scroll-view class="category-scroller" scroll-x type="list" show-scrollbar="false">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-chip"
+        data-category="{{item.id}}"
+        bindtap="openCategory"
+      >
+        <text>{{item.name}}</text>
+        <text class="category-count">{{item.count}}</text>
+      </view>
+    </scroll-view>
+
+    <view class="section-heading section-heading-tools">
+      <text class="section-title">常用工具</text>
+      <text class="section-count">原生运行</text>
+    </view>
+    <view class="tool-grid">
+      <view
+        wx:for="{{featuredTools}}"
+        wx:key="id"
+        class="tool-card"
+        data-id="{{item.id}}"
+        bindtap="openTool"
+      >
+        <view class="tool-icon">✦</view>
+        <text class="tool-name">{{item.name}}</text>
+        <text class="tool-description">{{item.description}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{query}}" class="search-hint">输入“{{query}}”后，进入全部工具搜索。</view>
+  </view>
+</scroll-view>

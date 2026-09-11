@@ -1,6 +1,8 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/home/index",
+    "pages/category/index",
+    "pages/tool/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
