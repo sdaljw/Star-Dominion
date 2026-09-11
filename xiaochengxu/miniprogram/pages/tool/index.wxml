@@ -1,7 +1,19 @@
 <scroll-view class="page-scroll" scroll-y type="list">
   <view class="tool-page">
     <tool-header title="{{title}}" description="{{description}}" bindback="goBack" />
-    <view wx:if="{{status === 'ready'}}" class="ready-card">
+    <dev-workbench
+      wx:if="{{status === 'ready' && workbench === 'dev'}}"
+      tool-id="{{id}}"
+    />
+    <calculator-workbench
+      wx:elif="{{status === 'ready' && workbench === 'calculator'}}"
+      tool-id="{{id}}"
+    />
+    <text-workbench
+      wx:elif="{{status === 'ready' && workbench === 'text'}}"
+      tool-id="{{id}}"
+    />
+    <view wx:elif="{{status === 'ready'}}" class="ready-card">
       <text class="ready-title">工具已就绪</text>
       <text class="ready-description">原生界面正在接入具体功能，请从首页选择其他已完成工具。</text>
     </view>

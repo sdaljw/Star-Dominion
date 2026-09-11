@@ -1,0 +1,34 @@
+<view class="workbench">
+  <view wx:if="{{toolId === 'url-encode' || toolId === 'base64-codec'}}" class="mode-switch">
+    <button class="mode-button {{mode === 'encode' ? 'mode-button-active' : ''}}" data-mode="encode" bindtap="onMode">编码</button>
+    <button class="mode-button {{mode === 'decode' ? 'mode-button-active' : ''}}" data-mode="decode" bindtap="onMode">解码</button>
+  </view>
+
+  <view class="field-label">输入内容</view>
+  <textarea
+    class="tool-textarea"
+    value="{{input}}"
+    maxlength="-1"
+    auto-height
+    placeholder="粘贴或输入内容"
+    bindinput="onInput"
+  />
+
+  <view class="action-row">
+    <button class="primary-button" bindtap="run">{{toolId === 'json-validate' ? '开始校验' : '开始处理'}}</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+
+  <view wx:if="{{valid}}" class="success-message">JSON 格式有效，可以继续使用。</view>
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+
+  <view wx:if="{{output}}" class="output-card">
+    <view class="output-header">
+      <text class="output-title">处理结果</text>
+      <button class="copy-button" size="mini" bindtap="copyOutput">复制</button>
+    </view>
+    <scroll-view class="output-scroll" scroll-y="true">
+      <text class="output-text">{{output}}</text>
+    </scroll-view>
+  </view>
+</view>

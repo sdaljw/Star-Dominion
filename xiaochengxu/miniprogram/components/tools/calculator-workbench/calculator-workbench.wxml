@@ -1,0 +1,70 @@
+<view class="workbench">
+  <view wx:if="{{isBmi}}" class="form-section">
+    <view class="field-label">身高（厘米）</view>
+    <input class="number-input" type="digit" placeholder="例如 170" data-field="inputA" bindinput="onFieldInput" />
+    <view class="field-label field-label-gap">体重（千克）</view>
+    <input class="number-input" type="digit" placeholder="例如 65" data-field="inputB" bindinput="onFieldInput" />
+  </view>
+
+  <view wx:if="{{isPercentage}}" class="form-section">
+    <view class="mode-grid">
+      <button class="mode-button {{percentageMode === 'ratio' ? 'mode-button-active' : ''}}" data-mode="ratio" bindtap="onPercentageMode">A 是 B 的百分之几</button>
+      <button class="mode-button {{percentageMode === 'percent' ? 'mode-button-active' : ''}}" data-mode="percent" bindtap="onPercentageMode">A 的 X%</button>
+      <button class="mode-button {{percentageMode === 'increase' ? 'mode-button-active' : ''}}" data-mode="increase" bindtap="onPercentageMode">A 增加 X%</button>
+      <button class="mode-button {{percentageMode === 'decrease' ? 'mode-button-active' : ''}}" data-mode="decrease" bindtap="onPercentageMode">A 减少 X%</button>
+    </view>
+    <view class="field-label">A 的值</view>
+    <input class="number-input" type="digit" placeholder="请输入数值" data-field="inputA" bindinput="onFieldInput" />
+    <view class="field-label field-label-gap">{{percentageMode === 'ratio' ? 'B 的值' : '百分比（%）'}}</view>
+    <input class="number-input" type="digit" placeholder="请输入数值" data-field="inputB" bindinput="onFieldInput" />
+  </view>
+
+  <view wx:if="{{isDiscount}}" class="form-section">
+    <view class="field-label">原价（元）</view>
+    <input class="number-input" type="digit" placeholder="请输入原价" data-field="inputA" bindinput="onFieldInput" />
+    <view class="field-label field-label-gap">折扣（%）</view>
+    <input class="number-input" type="digit" placeholder="80 表示八折" data-field="inputB" bindinput="onFieldInput" />
+  </view>
+
+  <view wx:if="{{isAge}}" class="form-section">
+    <view class="field-label">出生日期（YYYY-MM-DD）</view>
+    <input class="number-input" placeholder="例如 2000-02-29" data-field="birthDate" bindinput="onFieldInput" />
+    <view class="field-label field-label-gap">计算到（YYYY-MM-DD）</view>
+    <input class="number-input" value="{{targetDate}}" data-field="targetDate" bindinput="onFieldInput" />
+  </view>
+
+  <view wx:if="{{isDateDiff}}" class="form-section">
+    <view class="field-label">开始日期（YYYY-MM-DD）</view>
+    <input class="number-input" placeholder="例如 2024-01-01" data-field="startDate" bindinput="onFieldInput" />
+    <view class="field-label field-label-gap">结束日期（YYYY-MM-DD）</view>
+    <input class="number-input" placeholder="例如 2024-01-31" data-field="endDate" bindinput="onFieldInput" />
+  </view>
+
+  <view wx:if="{{isUnit}}" class="form-section">
+    <view class="field-label">数值</view>
+    <input class="number-input" type="digit" placeholder="请输入数值" data-field="inputA" bindinput="onFieldInput" />
+    <view class="unit-row">
+      <picker class="unit-picker-wrap" range="{{unitOptions}}" value="{{fromIndex}}" bindchange="onFromUnitChange">
+        <view class="unit-picker">{{fromUnit}} ▾</view>
+      </picker>
+      <text class="unit-arrow">→</text>
+      <picker class="unit-picker-wrap" range="{{unitOptions}}" value="{{toIndex}}" bindchange="onToUnitChange">
+        <view class="unit-picker">{{toUnit}} ▾</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="action-row">
+    <button class="primary-button" bindtap="calculate">计算</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{resultVisible}}" class="result-card">
+    <view class="result-header">
+      <text class="result-title">{{resultTitle}}</text>
+      <button class="copy-button" size="mini" bindtap="copyResult">复制</button>
+    </view>
+    <text class="result-text">{{resultText}}</text>
+  </view>
+</view>

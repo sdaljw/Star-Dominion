@@ -2,6 +2,9 @@
   "navigationBarTitleText": "工具详情",
   "usingComponents": {
     "tool-header": "/components/common/tool-header/tool-header",
-    "empty-state": "/components/common/empty-state/empty-state"
+    "empty-state": "/components/common/empty-state/empty-state",
+    "dev-workbench": "/components/tools/dev-workbench/dev-workbench",
+    "calculator-workbench": "/components/tools/calculator-workbench/calculator-workbench",
+    "text-workbench": "/components/tools/text-workbench/text-workbench"
   }
 }

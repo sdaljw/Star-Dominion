@@ -1,0 +1,143 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.field-header,
+.case-grid,
+.stats-grid {
+  display: flex;
+}
+
+.field-header {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-label,
+.stats-title {
+  color: #49382b;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.copy-button {
+  min-width: 100rpx;
+  margin: 0;
+  border: 0;
+  border-radius: 14rpx;
+  color: #8b5738;
+  background: #f8eee2;
+  font-size: 23rpx;
+  line-height: 2.2;
+}
+
+.tool-textarea {
+  width: 100%;
+  min-height: 280rpx;
+  box-sizing: border-box;
+  margin-top: 12rpx;
+  padding: 22rpx;
+  border: 1rpx solid #eadfce;
+  border-radius: 16rpx;
+  background: #fffdf9;
+  color: #392b20;
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+
+.case-section,
+.stats-section {
+  margin-top: 26rpx;
+}
+
+.case-grid {
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 14rpx;
+}
+
+.case-button {
+  width: calc(50% - 7rpx);
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 14rpx;
+  color: #806b59;
+  background: #fbf6ef;
+  font-size: 23rpx;
+  line-height: 2.6;
+}
+
+.case-button-wide {
+  width: 100%;
+}
+
+.case-button-active {
+  color: #fff;
+  background: #b66b3d;
+}
+
+.output-card {
+  margin-top: 22rpx;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  background: #f8f3ec;
+}
+
+.output-text {
+  display: block;
+  margin-top: 16rpx;
+  color: #3e3026;
+  font-size: 26rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.stats-title {
+  margin-bottom: 14rpx;
+}
+
+.stats-grid {
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.stat-item {
+  width: calc(33.33% - 10rpx);
+  box-sizing: border-box;
+  padding: 20rpx 8rpx;
+  border-radius: 14rpx;
+  background: #f8f3ec;
+  text-align: center;
+}
+
+.stat-number,
+.stat-label {
+  display: block;
+}
+
+.stat-number {
+  color: #b66b3d;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  color: #806b59;
+  font-size: 21rpx;
+}
+
+.clear-button {
+  margin-top: 24rpx;
+  border: 0;
+  border-radius: 14rpx;
+  color: #745d4b;
+  background: #f3e9dc;
+  font-size: 24rpx;
+  line-height: 2.5;
+}

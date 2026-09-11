@@ -1,0 +1,149 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.field-label {
+  color: #49382b;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.field-label-gap {
+  margin-top: 24rpx;
+}
+
+.number-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12rpx;
+  padding: 20rpx;
+  border: 1rpx solid #eadfce;
+  border-radius: 16rpx;
+  background: #fffdf9;
+  color: #392b20;
+  font-size: 28rpx;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
+}
+
+.mode-button,
+.primary-button,
+.secondary-button,
+.copy-button,
+.unit-picker {
+  border: 0;
+  border-radius: 14rpx;
+  font-size: 23rpx;
+  line-height: 2.2;
+}
+
+.mode-button {
+  padding: 8rpx 12rpx;
+  color: #806b59;
+  background: #fbf6ef;
+}
+
+.mode-button-active {
+  color: #fff;
+  background: #b66b3d;
+}
+
+.unit-row,
+.action-row,
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.unit-row {
+  margin-top: 22rpx;
+}
+
+.unit-picker-wrap {
+  flex: 1;
+}
+
+.unit-picker {
+  padding: 12rpx 18rpx;
+  border: 1rpx solid #eadfce;
+  color: #745d4b;
+  background: #fffdf9;
+  text-align: center;
+}
+
+.unit-arrow {
+  color: #b66b3d;
+  font-size: 30rpx;
+}
+
+.action-row {
+  margin-top: 24rpx;
+}
+
+.primary-button,
+.secondary-button {
+  flex: 1;
+}
+
+.primary-button {
+  color: #fff;
+  background: #b66b3d;
+}
+
+.secondary-button {
+  color: #745d4b;
+  background: #f3e9dc;
+}
+
+.error-message {
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 14rpx;
+  color: #a33d32;
+  background: #fff0ed;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.result-card {
+  margin-top: 24rpx;
+  padding: 22rpx;
+  border-radius: 16rpx;
+  background: #f1f7e8;
+}
+
+.result-header {
+  justify-content: space-between;
+}
+
+.result-title {
+  color: #527037;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.copy-button {
+  min-width: 100rpx;
+  margin: 0;
+  color: #527037;
+  background: #fff;
+}
+
+.result-text {
+  display: block;
+  margin-top: 18rpx;
+  color: #3c5d29;
+  font-size: 30rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
