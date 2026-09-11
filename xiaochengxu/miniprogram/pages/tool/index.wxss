@@ -12,40 +12,6 @@ page {
   padding: 24rpx 28rpx 64rpx;
 }
 
-.tool-page-header {
-  padding: 12rpx 4rpx 30rpx;
-}
-
-.back-button {
-  display: inline-block;
-  margin: 0 0 26rpx;
-  padding: 0 20rpx;
-  border: 1rpx solid #ead9c3;
-  border-radius: 999rpx;
-  color: #66452d;
-  background: #fff;
-  font-size: 24rpx;
-  line-height: 62rpx;
-}
-
-.tool-page-title,
-.tool-page-description {
-  display: block;
-}
-
-.tool-page-title {
-  color: #2f241b;
-  font-size: 48rpx;
-  font-weight: 700;
-}
-
-.tool-page-description {
-  margin-top: 12rpx;
-  color: #806b59;
-  font-size: 25rpx;
-  line-height: 1.6;
-}
-
 .migration-card {
   padding: 52rpx 32rpx;
   border: 1rpx solid #ead9c3;

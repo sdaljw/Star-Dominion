@@ -1,0 +1,22 @@
+.result-panel {
+  margin-top: 24rpx;
+  padding: 24rpx;
+  border: 1rpx solid #d9e4c7;
+  border-radius: 20rpx;
+  background: #f8fbf2;
+}
+
+.result-title {
+  color: #4f6b32;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.result-content {
+  max-height: 520rpx;
+  margin-top: 16rpx;
+  color: #46513b;
+  font-size: 24rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}

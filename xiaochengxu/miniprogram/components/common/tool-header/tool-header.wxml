@@ -1,0 +1,5 @@
+<view class="tool-page-header">
+  <button class="back-button" size="mini" bindtap="goBack">‹ 返回</button>
+  <text class="tool-page-title">{{title}}</text>
+  <text class="tool-page-description">{{description}}</text>
+</view>

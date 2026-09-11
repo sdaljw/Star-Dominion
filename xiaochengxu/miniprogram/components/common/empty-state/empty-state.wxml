@@ -1,0 +1,4 @@
+<view class="empty-card">
+  <text class="empty-title">{{title}}</text>
+  <text class="empty-description">{{description}}</text>
+</view>

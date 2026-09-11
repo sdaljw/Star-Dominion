@@ -1,0 +1,6 @@
+<view class="result-panel">
+  <view class="result-title">{{title}}</view>
+  <scroll-view class="result-content" scroll-y type="list">
+    <text selectable="true">{{content}}</text>
+  </scroll-view>
+</view>
