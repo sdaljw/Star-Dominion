@@ -1,0 +1,104 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.file-card {
+  margin-top: 22rpx;
+  padding: 18rpx;
+  border-radius: 18rpx;
+  background: #fbf6ef;
+  text-align: center;
+}
+
+.preview-image {
+  width: 100%;
+  height: 360rpx;
+}
+
+.file-name,
+.file-meta,
+.status-message,
+.error-message,
+.output-title,
+.output-text {
+  display: block;
+}
+
+.file-name {
+  margin-top: 12rpx;
+  color: #49382b;
+  font-size: 26rpx;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.file-meta,
+.status-message {
+  margin-top: 8rpx;
+  color: #806b59;
+  font-size: 22rpx;
+}
+
+.error-message {
+  margin-top: 18rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 14rpx;
+  color: #a33d32;
+  background: #fff0ed;
+  font-size: 24rpx;
+}
+
+.output-card {
+  margin-top: 22rpx;
+  padding: 18rpx;
+  border-radius: 16rpx;
+  background: #f8f3ec;
+}
+
+.output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.output-title {
+  color: #49382b;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.copy-button,
+.secondary-button {
+  border: 0;
+  border-radius: 14rpx;
+  color: #745d4b;
+  background: #fff;
+  font-size: 23rpx;
+  line-height: 2.4;
+}
+
+.copy-button {
+  min-width: 100rpx;
+  margin: 0;
+}
+
+.output-scroll {
+  max-height: 420rpx;
+  margin-top: 14rpx;
+}
+
+.output-text {
+  color: #3e3026;
+  font-family: monospace;
+  font-size: 20rpx;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.secondary-button {
+  margin-top: 18rpx;
+}

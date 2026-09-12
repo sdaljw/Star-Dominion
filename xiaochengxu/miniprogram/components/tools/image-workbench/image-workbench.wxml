@@ -1,0 +1,26 @@
+<view class="workbench">
+  <file-picker
+    type="image"
+    count="1"
+    extensions="{{extensions}}"
+    label="选择图片"
+    bindselect="onFileSelect"
+  />
+
+  <view wx:if="{{hasFile}}" class="file-card">
+    <image class="preview-image" src="{{filePath}}" mode="aspectFit" />
+    <text class="file-name">{{fileName}}</text>
+    <text class="file-meta">{{width}} × {{height}} px · {{fileSize}}</text>
+  </view>
+
+  <view wx:if="{{busy}}" class="status-message">正在读取图片…</view>
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{output}}" class="output-card">
+    <view class="output-header">
+      <text class="output-title">Base64 结果</text>
+      <button class="copy-button" size="mini" bindtap="copyOutput">复制</button>
+    </view>
+    <scroll-view class="output-scroll" scroll-y="true"><text class="output-text">{{output}}</text></scroll-view>
+  </view>
+  <button wx:if="{{hasFile}}" class="secondary-button" bindtap="clear">清空</button>
+</view>

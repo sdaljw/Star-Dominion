@@ -1,0 +1,19 @@
+.picker-wrap {
+  width: 100%;
+}
+
+.picker-button {
+  border: 0;
+  border-radius: 14rpx;
+  color: #fff;
+  background: #b66b3d;
+  font-size: 25rpx;
+  line-height: 2.6;
+}
+
+.picker-error {
+  display: block;
+  margin-top: 12rpx;
+  color: #a33d32;
+  font-size: 22rpx;
+}

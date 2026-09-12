@@ -1,0 +1,8 @@
+<scroll-view class="page-scroll" scroll-y type="list">
+  <view class="media-page">
+    <tool-header title="{{title}}" description="{{description}}" bindback="goBack" />
+    <image-workbench wx:if="{{status === 'ready' && workbench === 'image'}}" tool-id="{{id}}" />
+    <converter-workbench wx:elif="{{status === 'ready' && workbench === 'converter'}}" tool-id="{{id}}" />
+    <empty-state wx:else title="原生能力正在迁移" description="该媒体工具会在支持的微信运行时中逐步开放。" />
+  </view>
+</scroll-view>

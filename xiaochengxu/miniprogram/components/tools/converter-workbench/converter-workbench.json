@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "file-picker": "/components/tools/file-picker/file-picker"
+  }
+}

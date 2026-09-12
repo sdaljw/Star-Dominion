@@ -13,7 +13,10 @@ describe('native tool registry', () => {
 
     expect(new Set(ids).size).toBe(ids.length);
     expect(NATIVE_TOOLS.every((tool) => categoryIds.has(tool.category))).toBe(true);
-    expect(NATIVE_TOOLS.every((tool) => tool.name.trim() && tool.route.startsWith('/pages/tool/'))).toBe(true);
+    expect(NATIVE_TOOLS.every((tool) => (
+      tool.name.trim()
+      && (tool.route.startsWith('/pages/tool/') || tool.route.startsWith('/packages/media/'))
+    ))).toBe(true);
   });
 
   it('contains the first native tools without exposing stock or mouse-only tools', () => {

@@ -2,6 +2,7 @@ import { NATIVE_CATEGORIES } from './categories';
 import { NativeCategoryDefinition, NativeToolDefinition } from '../types/tool';
 
 const route = '/pages/tool/index';
+const mediaRoute = '/packages/media/index/index';
 
 export const NATIVE_TOOLS: NativeToolDefinition[] = [
   {
@@ -195,6 +196,54 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     status: 'ready',
     tags: ['时间', '单位', '换算'],
     workbench: 'calculator',
+  },
+  {
+    id: 'image-to-base64',
+    name: '图片转 Base64',
+    description: '在本地读取图片并转换为 Base64 文本',
+    category: 'image',
+    icon: 'code',
+    capability: 'file',
+    route: mediaRoute,
+    status: 'ready',
+    tags: ['图片', 'base64', '编码'],
+    workbench: 'image',
+  },
+  {
+    id: 'base64-to-image',
+    name: 'Base64 转图片',
+    description: '将 Base64 文本解码为图片文件',
+    category: 'image',
+    icon: 'image',
+    capability: 'file',
+    route: mediaRoute,
+    status: 'adapting',
+    tags: ['图片', 'base64', '解码'],
+    workbench: 'image',
+  },
+  {
+    id: 'jpg-to-png',
+    name: 'JPG 转 PNG',
+    description: '使用原生 Canvas 转换图片格式',
+    category: 'converter',
+    icon: 'convert',
+    capability: 'file',
+    route: mediaRoute,
+    status: 'adapting',
+    tags: ['图片', 'jpg', 'png', '转换'],
+    workbench: 'converter',
+  },
+  {
+    id: 'png-to-jpg',
+    name: 'PNG 转 JPG',
+    description: '使用原生 Canvas 转换图片格式',
+    category: 'converter',
+    icon: 'convert',
+    capability: 'file',
+    route: mediaRoute,
+    status: 'adapting',
+    tags: ['图片', 'png', 'jpg', '转换'],
+    workbench: 'converter',
   },
   {
     id: 'password-gen',

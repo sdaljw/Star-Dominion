@@ -13,5 +13,13 @@
   },
   "style": "v2",
   "componentFramework": "glass-easel",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "subpackages": [
+    {
+      "root": "packages/media",
+      "pages": [
+        "index/index"
+      ]
+    }
+  ]
 }

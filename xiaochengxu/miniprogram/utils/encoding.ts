@@ -92,8 +92,7 @@ function utf8Decode(bytes: number[]): ToolResult<string> {
   return { ok: true, value: output };
 }
 
-export function base64Encode(input: string): string {
-  const bytes = utf8Encode(input);
+function encodeBase64Bytes(bytes: readonly number[]): string {
   let output = '';
   for (let index = 0; index < bytes.length; index += 3) {
     const first = bytes[index];
@@ -112,6 +111,14 @@ export function base64Encode(input: string): string {
     output += fourthValue === 64 ? '=' : BASE64_ALPHABET[fourthValue];
   }
   return output;
+}
+
+export function base64Encode(input: string): string {
+  return encodeBase64Bytes(utf8Encode(input));
+}
+
+export function base64EncodeBytes(input: Uint8Array): string {
+  return encodeBase64Bytes(Array.from(input));
 }
 
 function base64Value(character: string): number {

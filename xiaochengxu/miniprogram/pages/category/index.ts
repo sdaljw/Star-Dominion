@@ -1,4 +1,4 @@
-import { getNativeCategoryById, getNativeToolsByCategory, searchNativeTools } from '../../data/toolRegistry';
+import { getNativeCategoryById, getNativeToolById, getNativeToolsByCategory, searchNativeTools } from '../../data/toolRegistry';
 
 Page({
   data: {
@@ -32,7 +32,9 @@ Page({
   },
 
   openTool(event: WechatMiniprogram.CustomEvent<WechatMiniprogram.IAnyObject>) {
-    const id = String(event.currentTarget.dataset.id ?? '');
-    wx.navigateTo({ url: `/pages/tool/index?id=${encodeURIComponent(id)}` });
+    const id = String(event.detail.id ?? event.currentTarget.dataset.id ?? '');
+    const tool = getNativeToolById(id);
+    const route = tool?.route ?? '/pages/tool/index';
+    wx.navigateTo({ url: `${route}?id=${encodeURIComponent(id)}` });
   },
 });

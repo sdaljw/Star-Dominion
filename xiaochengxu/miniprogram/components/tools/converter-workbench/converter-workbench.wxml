@@ -1,0 +1,9 @@
+<view class="workbench">
+  <file-picker type="image" count="1" extensions="{{extensions}}" label="选择源图片" bindselect="onFileSelect" />
+  <view class="message-card">
+    <text class="message-title">原生格式转换</text>
+    <text class="message-text">{{message}}</text>
+  </view>
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <button wx:if="{{hasFile}}" class="secondary-button" bindtap="clear">清空</button>
+</view>

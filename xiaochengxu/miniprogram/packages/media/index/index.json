@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "图片与转换",
+  "usingComponents": {
+    "tool-header": "/components/common/tool-header/tool-header",
+    "empty-state": "/components/common/empty-state/empty-state",
+    "image-workbench": "/components/tools/image-workbench/image-workbench",
+    "converter-workbench": "/components/tools/converter-workbench/converter-workbench"
+  }
+}

@@ -8,6 +8,8 @@
     "text-workbench": "/components/tools/text-workbench/text-workbench",
     "fun-workbench": "/components/tools/fun-workbench/fun-workbench",
     "assessment-workbench": "/components/tools/assessment-workbench/assessment-workbench",
-    "tarot-workbench": "/components/tools/tarot-workbench/tarot-workbench"
+    "tarot-workbench": "/components/tools/tarot-workbench/tarot-workbench",
+    "image-workbench": "/components/tools/image-workbench/image-workbench",
+    "converter-workbench": "/components/tools/converter-workbench/converter-workbench"
   }
 }

@@ -1,0 +1,52 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.message-card {
+  margin-top: 22rpx;
+  padding: 22rpx;
+  border-radius: 16rpx;
+  background: #fbf6ef;
+}
+
+.message-title,
+.message-text,
+.error-message {
+  display: block;
+}
+
+.message-title {
+  color: #49382b;
+  font-size: 27rpx;
+  font-weight: 700;
+}
+
+.message-text {
+  margin-top: 12rpx;
+  color: #806b59;
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
+.error-message {
+  margin-top: 18rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 14rpx;
+  color: #a33d32;
+  background: #fff0ed;
+  font-size: 24rpx;
+}
+
+.secondary-button {
+  margin-top: 18rpx;
+  border: 0;
+  border-radius: 14rpx;
+  color: #745d4b;
+  background: #f3e9dc;
+  font-size: 24rpx;
+  line-height: 2.5;
+}
