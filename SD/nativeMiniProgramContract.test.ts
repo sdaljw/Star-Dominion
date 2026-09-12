@@ -29,4 +29,15 @@ describe('native mini program shell', () => {
     expect(source).not.toMatch(/\b(?:new\s+)?Blob\s*\(/u);
     expect(source).not.toMatch(/(?:^|[^\w])window(?:\.|\[|\()/u);
   });
+
+  it('shows all categories on the native home page instead of featured tools', () => {
+    const homePage = readFileSync(resolve(miniRoot, 'pages/home/index.ts'), 'utf8');
+    const homeMarkup = readFileSync(resolve(miniRoot, 'pages/home/index.wxml'), 'utf8');
+
+    expect(homePage).not.toContain('featuredTools');
+    expect(homePage).not.toContain('slice(0, 8)');
+    expect(homeMarkup).toContain('全部分类');
+    expect(homeMarkup).toContain('{{item.description}}');
+    expect(homeMarkup).not.toContain('<text class="section-title">常用工具</text>');
+  });
 });

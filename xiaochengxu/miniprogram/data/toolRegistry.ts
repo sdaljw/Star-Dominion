@@ -855,6 +855,15 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
 
 export { NATIVE_CATEGORIES };
 
+export type NativeCategorySummary = NativeCategoryDefinition & { count: number };
+
+export function getNativeCategorySummaries(): NativeCategorySummary[] {
+  return NATIVE_CATEGORIES.map((category) => ({
+    ...category,
+    count: NATIVE_TOOLS.filter((tool) => tool.category === category.id).length,
+  }));
+}
+
 export function getNativeToolById(id: string): NativeToolDefinition | undefined {
   return NATIVE_TOOLS.find((tool) => tool.id === id);
 }

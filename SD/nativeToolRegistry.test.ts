@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   NATIVE_CATEGORIES,
   NATIVE_TOOLS,
+  getNativeCategorySummaries,
   getNativeToolById,
   searchNativeTools,
 } from '../xiaochengxu/miniprogram/data/toolRegistry';
@@ -40,5 +41,16 @@ describe('native tool registry', () => {
     expect(searchNativeTools('JSON').map((tool) => tool.id)).toContain('json-format');
     expect(searchNativeTools('密码').map((tool) => tool.id)).toContain('password-gen');
     expect(searchNativeTools('not-a-tool')).toHaveLength(0);
+  });
+
+  it('counts every registered tool in every category regardless of migration status', () => {
+    const summaries = getNativeCategorySummaries();
+
+    expect(summaries).toHaveLength(NATIVE_CATEGORIES.length);
+    expect(summaries.find((category) => category.id === 'pdf')?.count).toBeGreaterThan(0);
+    expect(summaries.find((category) => category.id === 'audio')?.count).toBeGreaterThan(0);
+    expect(summaries.find((category) => category.id === 'pdf')?.count).toBe(
+      NATIVE_TOOLS.filter((tool) => tool.category === 'pdf').length,
+    );
   });
 });

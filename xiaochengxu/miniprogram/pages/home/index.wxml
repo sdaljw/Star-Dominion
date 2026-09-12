@@ -8,21 +8,25 @@
     </view>
 
     <view class="section-heading">
-      <text class="section-title">工具分类</text>
-      <text class="section-count">18 个分类</text>
+      <text class="section-title">全部分类</text>
+      <text class="section-count">{{categories.length}} 个分类</text>
     </view>
-    <scroll-view class="category-scroller" scroll-x type="list" show-scrollbar="false">
+    <view class="category-grid">
       <view
         wx:for="{{categories}}"
         wx:key="id"
-        class="category-chip"
+        class="category-card"
         data-category="{{item.id}}"
         bindtap="openCategory"
       >
-        <text>{{item.name}}</text>
-        <text class="category-count">{{item.count}}</text>
+        <view class="category-card-top">
+          <text class="category-name">{{item.name}}</text>
+          <text class="category-count">{{item.count}} 个工具</text>
+        </view>
+        <text class="category-description">{{item.description}}</text>
+        <text class="category-action">查看分类 ›</text>
       </view>
-    </scroll-view>
+    </view>
 
     <view wx:if="{{query}}" class="section-heading section-heading-tools">
       <text class="section-title">搜索结果</text>
@@ -31,19 +35,6 @@
     <view wx:if="{{query}}" class="tool-grid">
       <tool-card
         wx:for="{{searchResults}}"
-        wx:key="id"
-        tool="{{item}}"
-        bindtap="openTool"
-      />
-    </view>
-
-    <view wx:if="{{!query}}" class="section-heading section-heading-tools">
-      <text class="section-title">常用工具</text>
-      <text class="section-count">原生运行</text>
-    </view>
-    <view wx:if="{{!query}}" class="tool-grid">
-      <tool-card
-        wx:for="{{featuredTools}}"
         wx:key="id"
         tool="{{item}}"
         bindtap="openTool"

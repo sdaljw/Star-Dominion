@@ -1,14 +1,10 @@
-import { getNativeToolById, NATIVE_CATEGORIES, NATIVE_TOOLS, searchNativeTools } from '../../data/toolRegistry';
+import { getNativeCategorySummaries, getNativeToolById, searchNativeTools } from '../../data/toolRegistry';
 
 Page({
   data: {
     query: '',
-    categories: NATIVE_CATEGORIES.slice(0, 8).map((category) => ({
-      ...category,
-      count: NATIVE_TOOLS.filter((tool) => tool.category === category.id && tool.status === 'ready').length,
-    })),
-    featuredTools: NATIVE_TOOLS.slice(0, 4),
-    searchResults: [] as typeof NATIVE_TOOLS,
+    categories: getNativeCategorySummaries(),
+    searchResults: [] as ReturnType<typeof searchNativeTools>,
   },
 
   onSearchInput(event: WechatMiniprogram.Input) {
