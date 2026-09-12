@@ -1,3 +1,5 @@
+/// <reference path="../../typings/types/wx/index.d.ts" />
+
 declare class URLSearchParams {
   constructor(init?: string);
   set(name: string, value: string): void;

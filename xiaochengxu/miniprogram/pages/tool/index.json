@@ -3,6 +3,7 @@
   "usingComponents": {
     "tool-header": "/components/common/tool-header/tool-header",
     "empty-state": "/components/common/empty-state/empty-state",
+    "compatibility-notice": "/components/common/compatibility-notice/compatibility-notice",
     "dev-workbench": "/components/tools/dev-workbench/dev-workbench",
     "calculator-workbench": "/components/tools/calculator-workbench/calculator-workbench",
     "text-workbench": "/components/tools/text-workbench/text-workbench",

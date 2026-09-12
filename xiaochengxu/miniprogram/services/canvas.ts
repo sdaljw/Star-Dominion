@@ -1,3 +1,5 @@
+/// <reference path="../types/wechat-globals.ts" />
+
 import { ToolResult } from '../utils/result';
 
 export interface ImageSize {

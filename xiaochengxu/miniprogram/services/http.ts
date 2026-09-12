@@ -1,3 +1,5 @@
+/// <reference path="../types/wechat-globals.ts" />
+
 export const API_BASE_URL = 'https://zhumenggy.top';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
