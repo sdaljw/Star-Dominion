@@ -1,0 +1,1 @@
+<scroll-view class="page-scroll" scroll-y type="list"><view class="package-page"><tool-header title="{{title}}" description="{{description}}" bindback="goBack" /><document-workbench wx:if="{{status === 'ready' && workbench === 'document'}}" tool-id="{{id}}" /><empty-state wx:else title="原生能力正在迁移" description="该文档工具会在支持的微信运行时中逐步开放。" /></view></scroll-view>

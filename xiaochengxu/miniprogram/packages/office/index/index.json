@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "办公工具",
+  "usingComponents": {
+    "tool-header": "/components/common/tool-header/tool-header",
+    "empty-state": "/components/common/empty-state/empty-state",
+    "document-workbench": "/components/tools/document-workbench/document-workbench"
+  }
+}

@@ -15,7 +15,14 @@ describe('native tool registry', () => {
     expect(NATIVE_TOOLS.every((tool) => categoryIds.has(tool.category))).toBe(true);
     expect(NATIVE_TOOLS.every((tool) => (
       tool.name.trim()
-      && (tool.route.startsWith('/pages/tool/') || tool.route.startsWith('/packages/media/'))
+      && (
+        tool.route.startsWith('/pages/tool/')
+        || tool.route.startsWith('/packages/media/')
+        || tool.route.startsWith('/packages/document/')
+        || tool.route.startsWith('/packages/pdf/')
+        || tool.route.startsWith('/packages/office/')
+        || tool.route.startsWith('/packages/academic/')
+      )
     ))).toBe(true);
   });
 

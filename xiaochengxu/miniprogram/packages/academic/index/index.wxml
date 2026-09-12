@@ -1,0 +1,1 @@
+<scroll-view class="page-scroll" scroll-y type="list"><view class="package-page"><tool-header title="{{title}}" description="{{description}}" bindback="goBack" /><document-workbench wx:if="{{status === 'ready' && workbench === 'document'}}" tool-id="{{id}}" /><empty-state wx:else title="学术能力正在迁移" description="参考文献基础格式先支持原生生成，复杂解析会逐步接入。" /></view></scroll-view>

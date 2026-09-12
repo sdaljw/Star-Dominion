@@ -1,0 +1,1 @@
+<scroll-view class="page-scroll" scroll-y type="list"><view class="package-page"><tool-header title="{{title}}" description="{{description}}" bindback="goBack" /><document-workbench wx:if="{{workbench === 'document'}}" tool-id="{{id}}" /><empty-state wx:else title="PDF 原生能力正在迁移" description="当前先完成页码和文件边界校验，重型 PDF 处理不会伪装成已完成。" /></view></scroll-view>

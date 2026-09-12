@@ -20,6 +20,30 @@
       "pages": [
         "index/index"
       ]
+    },
+    {
+      "root": "packages/document",
+      "pages": [
+        "index/index"
+      ]
+    },
+    {
+      "root": "packages/pdf",
+      "pages": [
+        "index/index"
+      ]
+    },
+    {
+      "root": "packages/office",
+      "pages": [
+        "index/index"
+      ]
+    },
+    {
+      "root": "packages/academic",
+      "pages": [
+        "index/index"
+      ]
     }
   ]
 }

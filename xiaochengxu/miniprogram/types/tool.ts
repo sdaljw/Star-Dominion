@@ -1,7 +1,7 @@
 export type NativeToolCapability = 'local' | 'request' | 'file' | 'camera' | 'audio' | 'unsupported';
 
 export type NativeToolStatus = 'ready' | 'adapting' | 'desktop-only';
-export type NativeToolWorkbench = 'dev' | 'calculator' | 'text' | 'fun' | 'assessment' | 'tarot' | 'image' | 'converter';
+export type NativeToolWorkbench = 'dev' | 'calculator' | 'text' | 'fun' | 'assessment' | 'tarot' | 'image' | 'converter' | 'document';
 
 export interface NativeToolDefinition {
   id: string;

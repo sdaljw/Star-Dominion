@@ -1,0 +1,42 @@
+<view class="workbench">
+  <file-picker wx:if="{{requiresFile}}" type="file" count="1" extensions="{{extensions}}" label="选择文档或数据文件" bindselect="onFileSelect" />
+  <view wx:if="{{fileName}}" class="file-name">已选择：{{fileName}}</view>
+
+  <view wx:if="{{isCitation}}" class="citation-form">
+    <input class="text-input" placeholder="作者，例如：张三" data-field="citationAuthor" bindinput="onInput" />
+    <input class="text-input" placeholder="题名" data-field="citationTitle" bindinput="onInput" />
+    <input class="text-input" placeholder="年份，例如：2026" data-field="citationYear" bindinput="onInput" />
+    <input class="text-input" placeholder="来源、期刊或出版社" data-field="citationSource" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{toolId === 'markup-converter' || toolId === 'format-converter'}}" class="mode-switch">
+    <button class="mode-button {{formatMode === 'markdown-html' ? 'mode-button-active' : ''}}" data-mode="markdown-html" bindtap="onFormatMode">Markdown → HTML</button>
+    <button class="mode-button {{formatMode === 'html-markdown' ? 'mode-button-active' : ''}}" data-mode="html-markdown" bindtap="onFormatMode">HTML → 文本</button>
+  </view>
+
+  <view wx:if="{{isPdfRange}}" class="pdf-form">
+    <input class="text-input" value="{{pageRange}}" placeholder="页码，例如 1-3,5" data-field="pageRange" bindinput="onInput" />
+    <input class="text-input" value="{{pageCount}}" placeholder="PDF 总页数" data-field="pageCount" bindinput="onInput" />
+  </view>
+
+  <view class="field-label">{{isCitation ? '补充输入（可选）' : '输入内容'}}</view>
+  <textarea class="tool-textarea" maxlength="-1" auto-height placeholder="粘贴文本、Markdown、CSV 或 JSON" data-field="input" bindinput="onInput" />
+
+  <view wx:if="{{isSpreadsheetDiff || isPrivacy}}" class="field-section">
+    <view class="field-label">{{isPrivacy ? '保留字段（逗号分隔）' : '对比文件内容'}}</view>
+    <textarea class="tool-textarea small-textarea" maxlength="-1" auto-height placeholder="第二份 CSV 或 name,email" data-field="secondaryInput" bindinput="onInput" />
+  </view>
+
+  <view class="action-row">
+    <button class="primary-button" bindtap="run">处理</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{output}}" class="output-card">
+    <view class="output-header">
+      <text class="output-title">处理结果</text>
+      <button class="copy-button" size="mini" bindtap="copyOutput">复制</button>
+    </view>
+    <scroll-view class="output-scroll" scroll-y="true"><text class="output-text">{{output}}</text></scroll-view>
+  </view>
+</view>
