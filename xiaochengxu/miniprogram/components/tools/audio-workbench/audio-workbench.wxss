@@ -1,0 +1,55 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 42rpx 28rpx;
+  border: 1rpx solid #ead9e5;
+  border-radius: 24rpx;
+  background: #fff8fc;
+  text-align: center;
+}
+
+.status-icon {
+  width: 88rpx;
+  height: 88rpx;
+  margin: 0 auto;
+  border-radius: 28rpx;
+  color: #fff;
+  background: #c15483;
+  font-size: 56rpx;
+  line-height: 88rpx;
+}
+
+.status-title,
+.status-text,
+.limit-list {
+  display: block;
+}
+
+.status-title {
+  margin-top: 24rpx;
+  color: #713451;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.status-text {
+  margin-top: 14rpx;
+  color: #805e70;
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
+.limit-list {
+  margin-top: 20rpx;
+  color: #8c6a7c;
+  font-size: 22rpx;
+  line-height: 2;
+  text-align: left;
+}
+
+.copy-button {
+  margin-top: 24rpx;
+  color: #fff;
+  background: #a94370;
+  border-radius: 14rpx;
+  font-size: 23rpx;
+}

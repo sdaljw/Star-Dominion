@@ -1,0 +1,11 @@
+<view class="workbench">
+  <view class="status-icon">♪</view>
+  <text class="status-title">{{title}}暂未开放原生处理</text>
+  <text class="status-text">{{detail}}</text>
+  <view class="limit-list">
+    <text>• 不上传你的音频文件</text>
+    <text>• 不伪造转换结果或下载文件</text>
+    <text>• 后续若接入受控服务，会单独增加权限和大小提示</text>
+  </view>
+  <button class="copy-button" bindtap="copyHint">复制能力说明</button>
+</view>

@@ -1,0 +1,45 @@
+<view class="workbench">
+  <view wx:if="{{hasMetaFields}}" class="field-group">
+    <view class="field-label">页面标题</view>
+    <input class="text-input" value="{{title}}" data-field="title" bindinput="onInput" />
+    <view class="field-label">页面描述</view>
+    <input class="text-input" value="{{description}}" data-field="description" bindinput="onInput" />
+    <view class="field-label">Canonical URL</view>
+    <input class="text-input" value="{{input}}" data-field="input" bindinput="onInput" />
+    <view class="field-label">分享图片 URL（可选）</view>
+    <input class="text-input" value="{{image}}" placeholder="https://example.com/share.png" data-field="image" bindinput="onInput" />
+  </view>
+
+  <view wx:else class="field-group">
+    <view class="field-label">{{label}}</view>
+    <textarea wx:if="{{mode === 'robots' || mode === 'sitemap'}}" class="tool-textarea" maxlength="-1" auto-height value="{{input}}" placeholder="{{inputPlaceholder}}" data-field="input" bindinput="onInput" />
+    <textarea wx:elif="{{mode === 'ua'}}" class="tool-textarea" maxlength="-1" auto-height value="{{input}}" placeholder="{{inputPlaceholder}}" data-field="input" bindinput="onInput" />
+    <input wx:else class="text-input" value="{{input}}" placeholder="{{inputPlaceholder}}" data-field="input" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{hasSecondary}}" class="field-group">
+    <view class="field-label">Disallow（每行一条，可选）</view>
+    <textarea class="tool-textarea small-textarea" maxlength="-1" auto-height value="{{secondaryInput}}" data-field="secondaryInput" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{hasUtmFields}}" class="utm-grid">
+    <input class="text-input" value="{{source}}" placeholder="utm_source" data-field="source" bindinput="onInput" />
+    <input class="text-input" value="{{medium}}" placeholder="utm_medium" data-field="medium" bindinput="onInput" />
+    <input class="text-input" value="{{campaign}}" placeholder="utm_campaign" data-field="campaign" bindinput="onInput" />
+    <input class="text-input" value="{{term}}" placeholder="utm_term（可选）" data-field="term" bindinput="onInput" />
+    <input class="text-input" value="{{content}}" placeholder="utm_content（可选）" data-field="content" bindinput="onInput" />
+  </view>
+
+  <view class="action-row">
+    <button class="primary-button" bindtap="run">生成结果</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{output}}" class="output-card">
+    <view class="output-header">
+      <text class="output-title">生成结果</text>
+      <button class="copy-button" size="mini" bindtap="copyOutput">复制</button>
+    </view>
+    <scroll-view class="output-scroll" scroll-y="true"><text class="output-text" selectable="true">{{output}}</text></scroll-view>
+  </view>
+</view>

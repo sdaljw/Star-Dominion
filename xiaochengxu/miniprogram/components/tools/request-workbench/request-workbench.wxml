@@ -1,0 +1,23 @@
+<view class="workbench">
+  <view class="notice-card">
+    <text class="notice-title">受控公开检测</text>
+    <text class="notice-text">只通过线上 HTTPS 服务检测公开地址，不连接本机或内网服务。</text>
+  </view>
+  <view class="field-label">{{label}}</view>
+  <input class="text-input" value="{{input}}" placeholder="{{placeholder}}" data-field="input" bindinput="onInput" />
+  <view class="action-row">
+    <button class="primary-button" loading="{{busy}}" disabled="{{busy}}" bindtap="run">{{busy ? '正在检测…' : '开始检测'}}</button>
+    <button class="secondary-button" disabled="{{busy}}" bindtap="clear">清空</button>
+  </view>
+  <view wx:if="{{error}}" class="error-message">
+    <text>{{error}}</text>
+    <button size="mini" class="retry-button" bindtap="retry">重试</button>
+  </view>
+  <view wx:if="{{output}}" class="output-card">
+    <view class="output-header">
+      <text class="output-title">{{resultTitle}}</text>
+      <button class="copy-button" size="mini" bindtap="copyOutput">复制</button>
+    </view>
+    <scroll-view class="output-scroll" scroll-y="true"><text class="output-text" selectable="true">{{output}}</text></scroll-view>
+  </view>
+</view>

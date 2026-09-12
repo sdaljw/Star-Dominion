@@ -1,0 +1,6 @@
+<scroll-view class="page-scroll" scroll-y type="list">
+  <view class="tool-page">
+    <tool-header title="{{title}}" description="{{description}}" bindback="goBack" />
+    <video-workbench tool-id="video-parser-downloader" />
+  </view>
+</scroll-view>

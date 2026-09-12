@@ -44,6 +44,12 @@
       "pages": [
         "index/index"
       ]
+    },
+    {
+      "root": "packages/video",
+      "pages": [
+        "index/index"
+      ]
     }
   ]
 }

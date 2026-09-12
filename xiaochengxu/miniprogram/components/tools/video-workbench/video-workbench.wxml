@@ -1,0 +1,44 @@
+<view class="workbench">
+  <view class="notice-card">
+    <text class="notice-title">公开视频临时处理</text>
+    <text class="notice-text">支持抖音和哔哩哔哩的单个公开视频。请只下载你拥有权利或已获授权的内容。</text>
+  </view>
+  <view wx:if="{{healthNote}}" class="health-note">{{healthNote}}</view>
+
+  <view class="input-row">
+    <input class="url-input" value="{{url}}" placeholder="粘贴抖音或 B 站公开视频链接" data-field="url" bindinput="onInput" />
+    <button class="paste-button" size="mini" bindtap="pasteUrl">粘贴</button>
+  </view>
+  <view class="action-row">
+    <button class="primary-button" loading="{{phase === 'parsing'}}" disabled="{{busy}}" bindtap="parse">{{phase === 'parsing' ? '正在解析…' : '解析视频'}}</button>
+    <button class="secondary-button" disabled="{{busy}}" bindtap="reset">换一个</button>
+  </view>
+
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{video}}" class="video-card">
+    <view class="platform-badge">{{video.platform === 'douyin' ? '抖音' : '哔哩哔哩'}}</view>
+    <text class="video-title">{{video.title}}</text>
+    <text class="video-meta">{{video.author || '作者信息未提供'}} · {{video.durationSeconds}} 秒</text>
+    <view class="field-label">选择实际可用清晰度</view>
+    <view class="quality-list">
+      <button wx:for="{{video.qualities}}" wx:key="id" class="quality-button {{selectedQualityId === item.id ? 'quality-button-active' : ''}}" data-quality-id="{{item.id}}" bindtap="selectQuality">
+        <text>{{item.label}} · {{item.extension}}</text>
+        <text class="quality-note">{{item.hasAudio ? '含音频' : '无音频'}}{{item.requiresMerge ? ' · 需要合并' : ''}}</text>
+      </button>
+    </view>
+
+    <view wx:if="{{job || jobId}}" class="progress-card">
+      <view class="progress-header"><text>{{statusNote}}</text><text>{{job ? job.progress : 0}}%</text></view>
+      <progress percent="{{job ? job.progress : 0}}" activeColor="#7a421b" backgroundColor="#e7d8c8" stroke-width="6" />
+      <text wx:if="{{job}}" class="progress-note">{{job.downloadedBytes}} / {{job.totalBytes || 0}} bytes</text>
+    </view>
+
+    <view class="action-row">
+      <button wx:if="{{phase === 'completed'}}" class="primary-button" disabled="{{busy}}" bindtap="saveVideo">保存到相册</button>
+      <button wx:else class="primary-button" disabled="{{busy || !selectedQualityId}}" bindtap="startDownload">{{busy ? '处理中…' : '开始下载'}}</button>
+      <button wx:if="{{phase === 'downloading'}}" class="secondary-button" bindtap="cancel">取消任务</button>
+    </view>
+  </view>
+
+  <view wx:elif="{{phase === 'idle'}}" class="empty-hint">解析后会显示视频标题、时长和实际可用清晰度。</view>
+</view>

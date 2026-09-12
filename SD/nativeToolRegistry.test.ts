@@ -22,6 +22,7 @@ describe('native tool registry', () => {
         || tool.route.startsWith('/packages/pdf/')
         || tool.route.startsWith('/packages/office/')
         || tool.route.startsWith('/packages/academic/')
+        || tool.route.startsWith('/packages/video/')
       )
     ))).toBe(true);
   });
@@ -31,6 +32,8 @@ describe('native tool registry', () => {
     expect(getNativeToolById('bmi-calculator')?.status).toBe('ready');
     expect(getNativeToolById('stock')).toBeUndefined();
     expect(NATIVE_TOOLS.filter((tool) => tool.category === 'mouse')).toHaveLength(0);
+    expect(getNativeToolById('video-parser-downloader')?.workbench).toBe('video');
+    expect(getNativeToolById('http-status-checker')?.capability).toBe('request');
   });
 
   it('searches names, descriptions, and tags case-insensitively', () => {

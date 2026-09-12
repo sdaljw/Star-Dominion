@@ -10,6 +10,9 @@
     "assessment-workbench": "/components/tools/assessment-workbench/assessment-workbench",
     "tarot-workbench": "/components/tools/tarot-workbench/tarot-workbench",
     "image-workbench": "/components/tools/image-workbench/image-workbench",
-    "converter-workbench": "/components/tools/converter-workbench/converter-workbench"
+    "converter-workbench": "/components/tools/converter-workbench/converter-workbench",
+    "request-workbench": "/components/tools/request-workbench/request-workbench",
+    "webmaster-workbench": "/components/tools/webmaster-workbench/webmaster-workbench",
+    "audio-workbench": "/components/tools/audio-workbench/audio-workbench"
   }
 }

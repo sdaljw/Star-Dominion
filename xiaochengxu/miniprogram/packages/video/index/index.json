@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "视频解析下载",
+  "usingComponents": {
+    "tool-header": "/components/common/tool-header/tool-header",
+    "video-workbench": "/components/tools/video-workbench/video-workbench"
+  }
+}
