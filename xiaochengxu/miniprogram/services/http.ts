@@ -1,5 +1,7 @@
 /// <reference path="../types/wechat-globals.ts" />
 
+import { parseWebUrl, serializeWebUrl, WebUrlParts } from '../utils/web-url';
+
 export const API_BASE_URL = 'https://zhumenggy.top';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -59,9 +61,9 @@ function isPrivateHost(hostname: string): boolean {
 
 export function validatePublicUrl(value: string): PublicUrlResult {
   const input = value.trim();
-  let parsed: URL;
+  let parsed: WebUrlParts;
   try {
-    parsed = new URL(input);
+    parsed = parseWebUrl(input);
   } catch {
     return { ok: false, error: '请输入有效的网络地址' };
   }
@@ -71,7 +73,7 @@ export function validatePublicUrl(value: string): PublicUrlResult {
   if (parsed.username || parsed.password || isPrivateHost(parsed.hostname)) {
     return { ok: false, error: '不允许检测本机或内网地址' };
   }
-  return { ok: true, value: parsed.toString() };
+  return { ok: true, value: serializeWebUrl(parsed) };
 }
 
 export function buildApiUrl(path: string): string {

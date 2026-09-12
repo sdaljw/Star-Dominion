@@ -23,5 +23,10 @@ describe('native mini program shell', () => {
     expect(source).not.toContain('<web-view');
     expect(source).not.toContain('WEB_ENTRY_URL');
     expect(source).not.toContain('?mini=1');
+    expect(source).not.toContain('new URL(');
+    expect(source).not.toContain('URLSearchParams');
+    expect(source).not.toMatch(/\b(document|navigator)\s*(?:\.|\[)/u);
+    expect(source).not.toMatch(/\b(?:new\s+)?Blob\s*\(/u);
+    expect(source).not.toMatch(/(?:^|[^\w])window(?:\.|\[|\()/u);
   });
 });

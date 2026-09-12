@@ -22,5 +22,7 @@ describe('native request and public-url boundaries', () => {
     const source = await readFile(new URL('../xiaochengxu/miniprogram/services/http.ts', import.meta.url), 'utf8');
     expect(source).not.toContain('8012');
     expect(source).not.toContain('8000');
+    expect(source).not.toContain('new URL(');
+    expect(source).not.toContain('URLSearchParams');
   });
 });

@@ -1,4 +1,5 @@
 import { validatePublicUrl } from './http';
+import { parseWebUrl, queryRecord, serializeWebUrl, setQueryParameter } from '../utils/web-url';
 
 export type MetaTagInput = { title: string; description: string; url: string; image?: string };
 export type SitemapEntry = {
@@ -38,7 +39,7 @@ const assertHostname = (value: string): string => {
   const candidate = /^[a-z][a-z\d+.-]*:\/\//iu.test(input) ? input : `https://${input}`;
   const result = validatePublicUrl(candidate);
   if (!result.ok) throw new Error(result.error);
-  const parsed = new URL(result.value);
+  const parsed = parseWebUrl(result.value);
   if (parsed.pathname !== '/' || parsed.search || parsed.hash || parsed.username || parsed.password) {
     throw new Error('请输入纯域名，不要包含路径或查询参数');
   }
@@ -108,11 +109,7 @@ export type ParsedUrl = {
 };
 
 export function parseUrl(value: string): ParsedUrl {
-  const parsed = new URL(assertHttpUrl(value));
-  const query: Record<string, string[]> = {};
-  parsed.searchParams.forEach((item, key) => {
-    (query[key] ??= []).push(item);
-  });
+  const parsed = parseWebUrl(assertHttpUrl(value));
   return {
     protocol: parsed.protocol,
     hostname: parsed.hostname,
@@ -121,20 +118,21 @@ export function parseUrl(value: string): ParsedUrl {
     pathname: parsed.pathname,
     hash: parsed.hash,
     origin: parsed.origin,
-    query,
+    query: queryRecord(parsed.search),
     hasCredentials: Boolean(parsed.username || parsed.password),
   };
 }
 
 export function buildUtmUrl(value: string, input: { source: string; medium: string; campaign: string; term?: string; content?: string }): string {
-  const parsed = new URL(assertHttpUrl(value));
+  const parsed = parseWebUrl(assertHttpUrl(value));
   if (!input.source.trim() || !input.medium.trim() || !input.campaign.trim()) throw new Error('source、medium 和 campaign 不能为空');
-  parsed.searchParams.set('utm_source', input.source.trim());
-  parsed.searchParams.set('utm_medium', input.medium.trim());
-  parsed.searchParams.set('utm_campaign', input.campaign.trim());
-  if (input.term?.trim()) parsed.searchParams.set('utm_term', input.term.trim());
-  if (input.content?.trim()) parsed.searchParams.set('utm_content', input.content.trim());
-  return parsed.toString();
+  let query = parsed.search;
+  query = setQueryParameter(query, 'utm_source', input.source.trim());
+  query = setQueryParameter(query, 'utm_medium', input.medium.trim());
+  query = setQueryParameter(query, 'utm_campaign', input.campaign.trim());
+  if (input.term?.trim()) query = setQueryParameter(query, 'utm_term', input.term.trim());
+  if (input.content?.trim()) query = setQueryParameter(query, 'utm_content', input.content.trim());
+  return serializeWebUrl(parsed, query);
 }
 
 export function slugify(value: string): string {
