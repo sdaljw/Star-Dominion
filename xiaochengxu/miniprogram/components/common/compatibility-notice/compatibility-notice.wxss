@@ -1,0 +1,38 @@
+.notice-card {
+  margin-top: 24rpx;
+  padding: 48rpx 32rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+  text-align: center;
+}
+
+.notice-icon {
+  width: 72rpx;
+  height: 72rpx;
+  margin: 0 auto;
+  border-radius: 24rpx;
+  color: #fff;
+  background: #b66b3d;
+  font-size: 44rpx;
+  line-height: 72rpx;
+}
+
+.notice-title,
+.notice-description {
+  display: block;
+}
+
+.notice-title {
+  margin-top: 20rpx;
+  color: #49382b;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.notice-description {
+  margin-top: 14rpx;
+  color: #806b59;
+  font-size: 24rpx;
+  line-height: 1.7;
+}

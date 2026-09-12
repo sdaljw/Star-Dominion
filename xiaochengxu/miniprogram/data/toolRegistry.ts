@@ -1,4 +1,5 @@
 import { NATIVE_CATEGORIES } from './categories';
+import { NATIVE_MIGRATION_TOOLS } from './nativeMigrationCatalog';
 import { NativeCategoryDefinition, NativeToolDefinition } from '../types/tool';
 
 const route = '/pages/tool/index';
@@ -224,6 +225,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: mediaRoute,
     status: 'adapting',
     tags: ['图片', 'base64', '解码'],
+    limitation: 'Base64 图片解码正在适配原生文件写入能力，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'image',
   },
   {
@@ -236,6 +238,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: mediaRoute,
     status: 'adapting',
     tags: ['图片', 'jpg', 'png', '转换'],
+    limitation: '图片格式转换正在适配原生 Canvas，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'converter',
   },
   {
@@ -248,6 +251,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: mediaRoute,
     status: 'adapting',
     tags: ['图片', 'png', 'jpg', '转换'],
+    limitation: '图片格式转换正在适配原生 Canvas，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'converter',
   },
   {
@@ -596,6 +600,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: pdfRoute,
     status: 'adapting',
     tags: ['PDF', '页码', '页面'],
+    limitation: 'PDF 二进制编辑能力正在适配原生小程序，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'document',
   },
   {
@@ -608,6 +613,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: pdfRoute,
     status: 'adapting',
     tags: ['PDF', '重排', '排序'],
+    limitation: 'PDF 二进制编辑能力正在适配原生小程序，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'document',
   },
   {
@@ -620,6 +626,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: pdfRoute,
     status: 'adapting',
     tags: ['PDF', '元数据', '隐私'],
+    limitation: 'PDF 二进制编辑能力正在适配原生小程序，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'document',
   },
   {
@@ -632,6 +639,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: officeRoute,
     status: 'adapting',
     tags: ['Word', '格式', '检查'],
+    limitation: 'Word 文档处理正在适配小程序分包，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'document',
   },
   {
@@ -644,6 +652,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route: academicRoute,
     status: 'adapting',
     tags: ['论文', '格式', '检查'],
+    limitation: '论文文件处理正在适配小程序分包，当前入口暂时保留，请先使用网站电脑版。',
     workbench: 'document',
   },
   {
@@ -812,6 +821,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route,
     status: 'desktop-only',
     tags: ['音频', 'mp3', 'wav', 'ogg', '格式'],
+    limitation: '音频编码需要桌面端音频能力，当前小程序不上传文件也不伪造转换结果，请使用网站电脑版。',
     workbench: 'audio',
   },
   {
@@ -824,6 +834,7 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route,
     status: 'desktop-only',
     tags: ['ncm', '网易云', '解密', '音乐'],
+    limitation: 'NCM 解密依赖桌面端二进制处理，当前小程序不上传文件，请使用网站电脑版。',
     workbench: 'audio',
   },
   {
@@ -836,8 +847,10 @@ export const NATIVE_TOOLS: NativeToolDefinition[] = [
     route,
     status: 'desktop-only',
     tags: ['变声', '音频', '音调', '速度'],
+    limitation: '变声依赖桌面端 Web Audio/MediaRecorder 能力，当前小程序不上传文件，请使用网站电脑版。',
     workbench: 'audio',
   },
+  ...NATIVE_MIGRATION_TOOLS,
 ];
 
 export { NATIVE_CATEGORIES };

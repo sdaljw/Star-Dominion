@@ -13,6 +13,7 @@ export interface NativeToolDefinition {
   route: string;
   status: NativeToolStatus;
   tags: string[];
+  limitation?: string;
   workbench?: NativeToolWorkbench;
 }
 

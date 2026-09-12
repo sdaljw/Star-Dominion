@@ -49,10 +49,11 @@
       <text class="ready-title">工具已就绪</text>
       <text class="ready-description">原生界面正在接入具体功能，请从首页选择其他已完成工具。</text>
     </view>
-    <view wx:elif="{{status === 'adapting'}}" class="migration-card">
-      <text class="migration-title">原生工具正在迁移</text>
-      <text class="migration-description">工具界面和逻辑会逐批改为原生小程序，完成后即可在这里使用。</text>
-    </view>
+    <compatibility-notice
+      wx:elif="{{status === 'adapting'}}"
+      title="原生工具正在迁移"
+      description="{{limitation || '工具界面和逻辑会逐批改为原生小程序，完成后即可在这里使用。'}}"
+    />
     <empty-state
       wx:else
       title="暂不支持此工具"

@@ -1,0 +1,5 @@
+<view class="notice-card">
+  <view class="notice-icon">⌁</view>
+  <text class="notice-title">{{title}}</text>
+  <text class="notice-description">{{description}}</text>
+</view>
