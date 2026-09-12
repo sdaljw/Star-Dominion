@@ -13,6 +13,18 @@
       wx:elif="{{status === 'ready' && workbench === 'text'}}"
       tool-id="{{id}}"
     />
+    <fun-workbench
+      wx:elif="{{status === 'ready' && workbench === 'fun'}}"
+      tool-id="{{id}}"
+    />
+    <assessment-workbench
+      wx:elif="{{status === 'ready' && workbench === 'assessment'}}"
+      tool-id="{{id}}"
+    />
+    <tarot-workbench
+      wx:elif="{{status === 'ready' && workbench === 'tarot'}}"
+      tool-id="{{id}}"
+    />
     <view wx:elif="{{status === 'ready'}}" class="ready-card">
       <text class="ready-title">工具已就绪</text>
       <text class="ready-description">原生界面正在接入具体功能，请从首页选择其他已完成工具。</text>

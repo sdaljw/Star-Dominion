@@ -1,0 +1,128 @@
+.workbench {
+  margin-top: 24rpx;
+  padding: 28rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 24rpx;
+  background: #fff;
+}
+
+.intro-card {
+  padding: 24rpx;
+  border-radius: 18rpx;
+  background: #fbf6ef;
+}
+
+.intro-title,
+.intro-text,
+.result-title,
+.card-position,
+.card-orientation,
+.card-name,
+.card-keywords,
+.card-reading {
+  display: block;
+}
+
+.intro-title {
+  color: #49382b;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.intro-text {
+  margin-top: 12rpx;
+  color: #806b59;
+  font-size: 23rpx;
+  line-height: 1.7;
+}
+
+.action-row,
+.result-header,
+.card-topline {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.action-row {
+  margin-top: 22rpx;
+}
+
+.primary-button,
+.secondary-button,
+.copy-button {
+  flex: 1;
+  border: 0;
+  border-radius: 14rpx;
+  font-size: 24rpx;
+  line-height: 2.5;
+}
+
+.primary-button {
+  color: #fff;
+  background: #7b557b;
+}
+
+.secondary-button {
+  color: #745d4b;
+  background: #f3e9dc;
+}
+
+.result-card {
+  margin-top: 24rpx;
+  padding: 22rpx;
+  border-radius: 18rpx;
+  background: #f8f1f7;
+}
+
+.result-header {
+  justify-content: space-between;
+}
+
+.result-title {
+  color: #5f3e63;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.copy-button {
+  flex: none;
+  min-width: 100rpx;
+  margin: 0;
+  color: #5f3e63;
+  background: #fff;
+  font-size: 23rpx;
+}
+
+.tarot-card {
+  margin-top: 18rpx;
+  padding: 22rpx;
+  border: 1rpx solid #e5d3e6;
+  border-radius: 16rpx;
+  background: #fff;
+}
+
+.card-topline {
+  justify-content: space-between;
+}
+
+.card-position,
+.card-orientation,
+.card-keywords {
+  color: #927895;
+  font-size: 22rpx;
+}
+
+.card-name {
+  margin-top: 12rpx;
+  color: #5f3e63;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.card-reading {
+  margin-top: 14rpx;
+  color: #6d5a6f;
+  font-size: 25rpx;
+  line-height: 1.7;
+}

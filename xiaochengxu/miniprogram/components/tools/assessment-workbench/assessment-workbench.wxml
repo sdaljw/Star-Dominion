@@ -1,0 +1,31 @@
+<view class="workbench">
+  <view wx:if="{{phase === 'questions' && definition}}" class="assessment-body">
+    <text class="assessment-title">{{definition.title}}</text>
+    <text class="assessment-description">{{definition.description}}</text>
+    <progress percent="{{progress}}" activeColor="#b66b3d" backgroundColor="#f1e5d6" stroke-width="6" />
+    <view class="question-meta">第 {{questionIndex + 1}} / {{definition.questions.length}} 题</view>
+    <text class="question-prompt">{{question.prompt}}</text>
+    <view class="option-list">
+      <button
+        wx:for="{{question.options}}"
+        wx:key="id"
+        class="option-button {{selectedId === item.id ? 'option-button-active' : ''}}"
+        data-option-id="{{item.id}}"
+        bindtap="selectOption"
+      >{{item.label}}</button>
+    </view>
+    <view wx:if="{{error}}" class="error-message">{{error}}</view>
+    <button class="primary-button" bindtap="nextQuestion">{{questionIndex + 1 === definition.questions.length ? '查看结果' : '下一题'}}</button>
+  </view>
+
+  <view wx:if="{{phase === 'result'}}" class="result-body">
+    <text class="result-kicker">测评完成</text>
+    <text class="result-title">{{resultTitle}}</text>
+    <text class="result-text">{{resultText}}</text>
+    <view class="result-actions">
+      <button class="primary-button" bindtap="copyResult">复制结果</button>
+      <button class="secondary-button" bindtap="restart">重新测评</button>
+    </view>
+    <text class="disclaimer">结果只用于自我观察和娱乐，不构成心理或医学诊断。</text>
+  </view>
+</view>

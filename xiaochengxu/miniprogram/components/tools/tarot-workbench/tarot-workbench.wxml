@@ -1,0 +1,25 @@
+<view class="workbench">
+  <view class="intro-card">
+    <text class="intro-title">给自己一个观察提示</text>
+    <text class="intro-text">塔罗结果用于整理思路和自我反思，不代表确定的未来，也不替代专业建议。</text>
+  </view>
+  <view class="action-row">
+    <button class="primary-button" bindtap="draw">{{drawCount === 3 ? '抽取三张牌' : '抽取一张牌'}}</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+  <view wx:if="{{cards.length}}" class="result-card">
+    <view class="result-header">
+      <text class="result-title">抽牌结果</text>
+      <button class="copy-button" size="mini" bindtap="copyResult">复制</button>
+    </view>
+    <view wx:for="{{cards}}" wx:key="id" class="tarot-card">
+      <view class="card-topline">
+        <text class="card-position">第 {{index + 1}} 张</text>
+        <text class="card-orientation">{{item.isReversed ? '逆位' : '正位'}}</text>
+      </view>
+      <text class="card-name">{{item.name}}</text>
+      <text class="card-keywords">{{item.keywordText}}</text>
+      <text class="card-reading">{{item.reading}}</text>
+    </view>
+  </view>
+</view>

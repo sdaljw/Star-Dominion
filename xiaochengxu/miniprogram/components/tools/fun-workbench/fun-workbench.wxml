@@ -1,0 +1,49 @@
+<view class="workbench">
+  <view wx:if="{{toolId === 'random-number'}}" class="form-section">
+    <view class="field-label">最小值</view>
+    <input class="number-input" type="digit" value="{{inputA}}" data-field="inputA" bindinput="onInput" />
+    <view class="field-label field-gap">最大值</view>
+    <input class="number-input" type="digit" value="{{inputB}}" data-field="inputB" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{toolId === 'password-gen' || toolId === 'random-password'}}" class="form-section">
+    <view class="field-label">密码长度（1-128）</view>
+    <input class="number-input" type="number" value="{{passwordLength}}" data-field="passwordLength" bindinput="onInput" />
+    <view class="helper-text">包含大小写字母、数字和常用符号。</view>
+  </view>
+
+  <view wx:if="{{toolId === 'dice-tool'}}" class="form-section">
+    <view class="field-label">骰子数量</view>
+    <input class="number-input" type="number" value="{{diceCount}}" data-field="diceCount" bindinput="onInput" />
+    <view class="field-label field-gap">每颗骰子面数</view>
+    <input class="number-input" type="number" value="{{diceSides}}" data-field="diceSides" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{toolId === 'lottery-tool' || toolId === 'random-picker'}}" class="form-section">
+    <view class="field-label">候选名单（每行一个）</view>
+    <textarea class="tool-textarea" maxlength="-1" auto-height placeholder="小明\n小红\n小王" data-field="entries" bindinput="onInput" />
+    <view wx:if="{{toolId === 'lottery-tool'}}" class="field-label field-gap">抽取数量</view>
+    <input wx:if="{{toolId === 'lottery-tool'}}" class="number-input" type="number" value="{{winnerCount}}" data-field="winnerCount" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{toolId === 'random-nickname' || toolId === 'what-to-eat'}}" class="intro-card">
+    <text>{{toolId === 'random-nickname' ? '生成一个轻松有趣的昵称。' : '把今天的选择交给一点随机性。'}}</text>
+  </view>
+
+  <view class="action-row">
+    <button class="primary-button" bindtap="run">开始</button>
+    <button class="secondary-button" bindtap="clear">清空</button>
+  </view>
+
+  <view wx:if="{{error}}" class="error-message">{{error}}</view>
+  <view wx:if="{{result || resultList.length}}" class="result-card">
+    <view class="result-header">
+      <text class="result-title">结果</text>
+      <button class="copy-button" size="mini" bindtap="copyResult">复制</button>
+    </view>
+    <text wx:if="{{result}}" class="result-main">{{result}}</text>
+    <view wx:if="{{resultList.length}}" class="result-list">
+      <view wx:for="{{resultList}}" wx:key="index" class="result-item">{{index + 1}}. {{item}}</view>
+    </view>
+  </view>
+</view>

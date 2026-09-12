@@ -5,6 +5,9 @@
     "empty-state": "/components/common/empty-state/empty-state",
     "dev-workbench": "/components/tools/dev-workbench/dev-workbench",
     "calculator-workbench": "/components/tools/calculator-workbench/calculator-workbench",
-    "text-workbench": "/components/tools/text-workbench/text-workbench"
+    "text-workbench": "/components/tools/text-workbench/text-workbench",
+    "fun-workbench": "/components/tools/fun-workbench/fun-workbench",
+    "assessment-workbench": "/components/tools/assessment-workbench/assessment-workbench",
+    "tarot-workbench": "/components/tools/tarot-workbench/tarot-workbench"
   }
 }
