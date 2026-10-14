@@ -9,9 +9,12 @@ def test_workspace_runs_and_proxies_research_reports() -> None:
     check = (ROOT / "scripts/check-local.ps1").read_text(encoding="utf-8")
     manifest = (ROOT / "scripts/local-services.json").read_text(encoding="utf-8")
     vite = (ROOT / "SD/vite.config.ts").read_text(encoding="utf-8")
+    nginx = (ROOT / "nginx.conf").read_text(encoding="utf-8")
 
     assert "Get-LocalServiceManifest" in start
     assert '"name":"research-reports"' in manifest
     assert '"ports":[8009]' in manifest
     assert "Get-LocalServiceManifest" in check
     assert "'/reports-api'" in vite
+    assert "location ^~ /reports-api/" in nginx
+    assert "proxy_pass http://127.0.0.1:8009/;" in nginx

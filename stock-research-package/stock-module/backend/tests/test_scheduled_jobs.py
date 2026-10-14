@@ -52,6 +52,25 @@ def test_scheduler_adds_daily_candidate_refresh_at_configured_time() -> None:
     assert candidate.max_instances == 1
 
 
+def test_scheduler_adds_weekday_after_close_market_line_refresh() -> None:
+    scheduler = build_scheduler(
+        timezone_name="Asia/Shanghai",
+        mom_refresh=lambda: None,
+        directory_refresh=lambda: None,
+        candidate_refresh=lambda: None,
+        market_line_refresh=lambda: None,
+        market_line_refresh_time="15:30",
+    )
+
+    market_line = scheduler.get_job("market-line-refresh")
+
+    assert market_line is not None
+    assert "day_of_week='mon-fri'" in str(market_line.trigger)
+    assert "hour='15'" in str(market_line.trigger)
+    assert "minute='30'" in str(market_line.trigger)
+    assert market_line.max_instances == 1
+
+
 class CapturingScheduler:
     def start(self) -> None:
         return None
@@ -98,3 +117,5 @@ def test_app_wires_candidate_coordinator_into_scheduler(
 
     assert captured["candidate_refresh"].__self__ is coordinator
     assert captured["candidate_refresh_time"] == "09:00"
+    assert captured["market_line_refresh"].__self__ is coordinator
+    assert captured["market_line_refresh_time"] == "15:30"

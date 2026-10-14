@@ -6,6 +6,7 @@ import type {
   KlineDays,
   ModelProfile,
   ModelProfileCreate,
+  MarketLineSnapshot,
   MomIndexHistoryResponse,
   MomIndexSnapshot,
   MorningReport,
@@ -156,6 +157,13 @@ export const loadCurrentMomIndex = () =>
   request<MomIndexSnapshot>(
     "/stock-api/api/v1/mom-index/current",
     "宝妈指数加载失败",
+  );
+
+export const loadCurrentMarketLine = () =>
+  request<MarketLineSnapshot>(
+    "/stock-api/api/v1/market-line/current",
+    "市场主线加载失败",
+    { cache: "no-store" },
   );
 
 export const loadMomIndexHistory = (limit = 30) =>

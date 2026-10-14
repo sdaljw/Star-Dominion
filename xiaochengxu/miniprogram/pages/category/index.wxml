@@ -7,7 +7,7 @@
     </view>
     <view wx:if="{{tools.length === 0}}" class="empty-card">
       <text class="empty-title">工具正在迁移</text>
-      <text class="empty-description">这个分类会在原生版本迁移完成后显示可用工具。</text>
+      <text class="empty-description">这个分类共有 {{readyCount + migratingCount}} 个工具，其中 {{readyCount}} 个已就绪、{{migratingCount}} 个迁移中，稍后再来看看。</text>
     </view>
     <view wx:else class="tool-grid">
       <tool-card wx:for="{{tools}}" wx:key="id" tool="{{item}}" bindtap="openTool" />

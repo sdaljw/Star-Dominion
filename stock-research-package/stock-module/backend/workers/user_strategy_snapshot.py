@@ -1,7 +1,7 @@
 """Generate the normalized K-line snapshot consumed by the user strategy engine."""
 
 import argparse
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 import json
@@ -11,9 +11,22 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from app.domain.market_lines import (
+    ConceptMarketInput,
+    ConceptMarketMember,
+    MarketEnvironment,
+    MarketLineSnapshot,
+    classify_market_environment,
+    score_market_lines,
+)
 from app.domain.stocks import InvalidMainBoardSymbol, normalize_symbol
+from app.repositories.market_lines import MarketLineHistoryRepository
 from app.domain.strategies import SMALL_CAP_MARKET_CAP_LIMIT
-from workers.ths_hot_concepts import StockSeedData, collect_ths_hot_stock_pool
+from workers.ths_hot_concepts import (
+    ConceptSnapshot,
+    StockSeedData,
+    collect_ths_hot_stock_pool,
+)
 
 
 DEFAULT_TOP_CONCEPTS = 30
@@ -69,6 +82,12 @@ def build_snapshot(
     min_bars: int = 150,
     small_cap_pool: dict[str, StockSeed] | None = None,
 ) -> dict[str, object]:
+    shanghai = ZoneInfo("Asia/Shanghai")
+    local_time = (generated_at.replace(tzinfo=shanghai) if generated_at.tzinfo is None
+                  else generated_at.astimezone(shanghai))
+    last_complete_date = local_time.date()
+    if local_time.hour < 15:
+        last_complete_date -= timedelta(days=1)
     return {
         "generated_at": generated_at.isoformat(),
         "stocks": _build_snapshot_rows(stock_pool, history_loader, min_bars=min_bars),
@@ -76,6 +95,7 @@ def build_snapshot(
             small_cap_pool or {},
             history_loader,
             min_bars=min_bars,
+            last_complete_date=last_complete_date,
         ),
     }
 
@@ -85,6 +105,7 @@ def _build_snapshot_rows(
     history_loader: HistoryLoader,
     *,
     min_bars: int,
+    last_complete_date: date | None = None,
 ) -> list[dict[str, object]]:
     stocks: list[dict[str, object]] = []
     for raw_symbol, seed in stock_pool.items():
@@ -98,6 +119,9 @@ def _build_snapshot_rows(
             bars = normalize_history(history_loader(symbol))
         except Exception:
             continue
+        if last_complete_date is not None:
+            cutoff = last_complete_date.isoformat()
+            bars = [bar for bar in bars if isinstance(bar.get("date"), str) and bar["date"] <= cutoff]
         if len(bars) < min_bars:
             continue
         record: dict[str, object] = {
@@ -133,13 +157,19 @@ def collect_hot_stock_pool(
     max_stocks: int,
     concept_cache: Path | None = None,
     ths_collector: Callable[..., dict[str, StockSeedData]] = collect_ths_hot_stock_pool,
+    concepts_output: list[ConceptSnapshot] | None = None,
 ) -> dict[str, StockSeed]:
     try:
+        collector_kwargs: dict[str, object] = {
+            "top_concepts": top_concepts,
+            "max_stocks": max_stocks,
+            "cache_path": concept_cache,
+        }
+        if concepts_output is not None:
+            collector_kwargs["concepts_output"] = concepts_output
         ths_pool = ths_collector(
             akshare,
-            top_concepts=top_concepts,
-            max_stocks=max_stocks,
-            cache_path=concept_cache,
+            **collector_kwargs,
         )
     except Exception:
         ths_pool = {}
@@ -163,6 +193,7 @@ def collect_small_cap_stock_pool(
     akshare: Any,
     *,
     market_cap_limit: float = SMALL_CAP_MARKET_CAP_LIMIT,
+    breadth_output: dict[str, int] | None = None,
 ) -> dict[str, StockSeed]:
     """Collect every eligible main-board stock with a trustworthy market cap."""
     frame = akshare.stock_zh_a_spot_em()
@@ -170,6 +201,13 @@ def collect_small_cap_stock_pool(
         raise RuntimeError("东方财富全市场行情为空，无法筛选小市值股票")
 
     pool: dict[str, StockSeed] = {}
+    breadth = {
+        "advancing": 0,
+        "declining": 0,
+        "flat": 0,
+        "limit_up_count": 0,
+        "quote_count": 0,
+    }
     for row in frame.to_dict(orient="records"):
         raw_symbol = str(_first_value(row, "代码", "code", "symbol") or "").strip()
         if raw_symbol.isdigit():
@@ -181,10 +219,21 @@ def collect_small_cap_stock_pool(
         name = str(_first_value(row, "名称", "name") or symbol).strip()
         if "ST" in name.upper() or "退" in name:
             continue
+        pct = _number(_first_value(row, "涨跌幅", "pct", "changepercent"))
+        if pct is not None:
+            breadth["quote_count"] += 1
+            if pct > 0:
+                breadth["advancing"] += 1
+            elif pct < 0:
+                breadth["declining"] += 1
+            else:
+                breadth["flat"] += 1
+            if 9.8 <= pct <= 10.2:
+                breadth["limit_up_count"] += 1
         market_cap = _number(
             _first_value(row, "总市值", "总市值(元)", "market_cap", "total_market_cap")
         )
-        if market_cap is None or not math.isfinite(market_cap) or market_cap >= market_cap_limit:
+        if market_cap is None or not math.isfinite(market_cap) or not 0 < market_cap < market_cap_limit:
             continue
         pool[symbol] = StockSeed(
             symbol=symbol,
@@ -192,7 +241,89 @@ def collect_small_cap_stock_pool(
             concepts=[],
             market_cap=market_cap,
         )
+    if breadth_output is not None:
+        breadth_output.update(breadth)
     return pool
+
+
+def refresh_market_line_history(
+    output_path: Path,
+    concepts: list[ConceptSnapshot],
+    small_cap_rows: list[dict[str, object]],
+    breadth: Mapping[str, int],
+    generated_at: datetime,
+) -> MarketLineSnapshot | None:
+    """Append a market-line snapshot only from complete after-close source data."""
+    local_time = (generated_at.replace(tzinfo=ZoneInfo("Asia/Shanghai"))
+                  if generated_at.tzinfo is None
+                  else generated_at.astimezone(ZoneInfo("Asia/Shanghai")))
+    if local_time.hour < 15 or not concepts or breadth.get("quote_count", 0) <= 0:
+        return None
+    if breadth.get("advancing", 0) + breadth.get("declining", 0) <= 0:
+        return None
+    acquisitions = []
+    for concept in concepts:
+        acquired = concept.acquired_at
+        if acquired is None or acquired.tzinfo is None:
+            return None
+        acquired = acquired.astimezone(ZoneInfo("Asia/Shanghai"))
+        if acquired.date() != local_time.date() or acquired.hour < 15 or acquired > local_time:
+            return None
+        acquisitions.append(acquired)
+
+    dated_bars = [
+        parsed
+        for row in small_cap_rows
+        if isinstance(row.get("bars"), list)
+        for bar in row["bars"]
+        if isinstance(bar, Mapping)
+        if (parsed := _date_string(bar.get("date"))) is not None
+    ]
+    if not dated_bars:
+        return None
+    as_of_date = date.fromisoformat(max(dated_bars))
+    if as_of_date != local_time.date():
+        return None
+
+    ranked_concepts = [
+        ConceptMarketInput(
+            name=concept.name,
+            code=concept.code,
+            hot_rank=concept.hot_rank,
+            pct=concept.pct,
+            turnover_yi=concept.turnover_yi,
+            up_count=concept.up_count,
+            down_count=concept.down_count,
+            members=[
+                ConceptMarketMember(symbol=item.symbol, name=item.name, pct=item.pct)
+                for item in concept.members
+            ],
+        )
+        for concept in concepts
+    ]
+    advancing = max(int(breadth.get("advancing", 0)), 0)
+    declining = max(int(breadth.get("declining", 0)), 0)
+    environment = MarketEnvironment(
+        label=classify_market_environment(advancing, declining),
+        advancing=advancing,
+        declining=declining,
+        flat=max(int(breadth.get("flat", 0)), 0),
+        limit_up_count=max(int(breadth.get("limit_up_count", 0)), 0),
+    )
+    repository = MarketLineHistoryRepository(
+        output_path.with_name("market-line-history.json")
+    )
+    snapshot = score_market_lines(
+        ranked_concepts,
+        repository.load(),
+        small_cap_rows,
+        environment,
+        as_of_date,
+        generated_at,
+        concept_acquired_at=min(acquisitions),
+    )
+    repository.save(snapshot)
+    return snapshot
 
 
 def _collect_eastmoney_concept_pool(
@@ -372,11 +503,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.concept_cache
         else output_path.parent / "ths-concepts-cache.json"
     )
+    concepts: list[ConceptSnapshot] = []
     pool = collect_hot_stock_pool(
         ak,
         top_concepts=args.top_concepts,
         max_stocks=args.max_stocks,
         concept_cache=concept_cache,
+        concepts_output=concepts,
     )
     start_date = (datetime.now() - timedelta(days=args.lookback_days)).strftime("%Y%m%d")
     end_date = datetime.now().strftime("%Y%m%d")
@@ -386,7 +519,8 @@ def main(argv: list[str] | None = None) -> int:
 
     generated_at = datetime.now(ZoneInfo("Asia/Shanghai"))
     try:
-        small_cap_pool = collect_small_cap_stock_pool(ak)
+        market_breadth: dict[str, int] = {}
+        small_cap_pool = collect_small_cap_stock_pool(ak, breadth_output=market_breadth)
         payload = build_snapshot(
             pool,
             load_history,
@@ -413,6 +547,19 @@ def main(argv: list[str] | None = None) -> int:
             }
         )
     write_snapshot_atomic(payload, output_path)
+    if payload.get("small_cap_status") == "ok":
+        small_cap_rows = payload.get("small_cap_stocks")
+        if isinstance(small_cap_rows, list):
+            try:
+                refresh_market_line_history(
+                    output_path,
+                    concepts,
+                    small_cap_rows,
+                    market_breadth,
+                    generated_at,
+                )
+            except Exception as exc:
+                print(f"主线历史未更新，保留最近成功快照：{exc}")
     print(
         f"已生成用户策略快照：{output_path.resolve()}（"
         f"原策略 {len(payload['stocks'])} 只，小市值 {len(payload['small_cap_stocks'])} 只）"

@@ -1,8 +1,20 @@
+import { iconEmoji } from '../../../utils/icons';
+
 Component({
   properties: {
     tool: {
       type: Object,
       value: {},
+    },
+  },
+
+  data: {
+    emoji: '',
+  },
+
+  observers: {
+    tool(tool: { icon?: string }) {
+      this.setData({ emoji: iconEmoji(tool?.icon) });
     },
   },
 

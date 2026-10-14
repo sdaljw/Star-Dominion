@@ -202,3 +202,43 @@ class AICollectionRun(Base):
     status: Mapped[str] = mapped_column(String(32), default="running", index=True)
     counts_json: Mapped[dict[str, object]] = mapped_column(JSON, default=dict)
     error_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class XPost(Base):
+    """A normalized public post received from an external timeline provider."""
+
+    __tablename__ = "x_posts"
+    __table_args__ = (
+        UniqueConstraint("provider", "external_id", name="uq_x_post_provider_external_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    provider: Mapped[str] = mapped_column(String(32), index=True)
+    external_id: Mapped[str] = mapped_column(String(128))
+    author: Mapped[str] = mapped_column(String(255))
+    username: Mapped[str] = mapped_column(String(64), index=True)
+    text: Mapped[str] = mapped_column(Text)
+    canonical_url: Mapped[str] = mapped_column(String(1024), index=True)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    importance: Mapped[int] = mapped_column(Integer)
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class XEventReport(Base):
+    """An idempotent Gemini summary batch for the social-events page."""
+
+    __tablename__ = "x_event_reports"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    status: Mapped[str] = mapped_column(String(32), default="published", index=True)
+    model_provider: Mapped[str] = mapped_column(String(64))
+    model_name: Mapped[str] = mapped_column(String(128))
+    title: Mapped[str] = mapped_column(String(255))
+    summary_markdown: Mapped[str] = mapped_column(Text)
+    events_json: Mapped[list[dict[str, object]]] = mapped_column(JSON, default=list)
+    risks_json: Mapped[list[str]] = mapped_column(JSON, default=list)
+    post_ids_json: Mapped[list[dict[str, str]]] = mapped_column(JSON, default=list)
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

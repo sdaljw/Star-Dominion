@@ -44,6 +44,43 @@ page {
   margin-top: 26rpx;
 }
 
+.search-history {
+  margin-top: 22rpx;
+}
+
+.search-history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-history-title {
+  color: #9b8775;
+  font-size: 22rpx;
+}
+
+.search-history-clear {
+  color: #ad8d70;
+  font-size: 22rpx;
+}
+
+.search-history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+.history-tag {
+  padding: 8rpx 20rpx;
+  border: 1rpx solid #ead9c3;
+  border-radius: 999rpx;
+  background: #fffdf9;
+  color: #6b5847;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
 .section-heading {
   display: flex;
   align-items: baseline;
@@ -84,6 +121,28 @@ page {
 .category-card-top {
   display: flex;
   align-items: flex-start;
+  gap: 16rpx;
+}
+
+.category-icon-badge {
+  flex: 0 0 auto;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18rpx;
+  background: #faf3e8;
+  border: 1rpx solid #ead9c3;
+  font-size: 32rpx;
+  line-height: 1;
+}
+
+.category-card-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 10rpx;
 }

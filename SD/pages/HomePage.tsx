@@ -39,7 +39,7 @@ const RealTimeClock: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="text-3xl md:text-4xl font-mono font-bold text-[#2f241b]">
+      <div className="text-2xl sm:text-3xl md:text-4xl font-mono font-bold text-[#2f241b]">
         {time.toLocaleTimeString('zh-CN', { hour12: false })}
       </div>
       <div className="text-sm text-[#6d5a47] flex items-center gap-2">
@@ -107,7 +107,7 @@ export const HomePage: React.FC = () => {
   return (
     <>
       <PageSeo metadata={HOME_METADATA} />
-      <div className="space-y-10 max-w-[1500px] mx-auto">
+      <div className="space-y-8 sm:space-y-10 max-w-[1500px] mx-auto">
       <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px] items-start">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -126,13 +126,13 @@ export const HomePage: React.FC = () => {
             </span>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-5 text-[#2f241b]">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-5 text-[#2f241b]">
             <span className="bg-gradient-to-r from-[#2f241b] via-[#8a4b1f] to-[#5f6f42] bg-clip-text text-transparent">
               逐梦工具箱
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-[#5c4937] mb-8 min-h-10 font-semibold">
+          <p className="text-lg sm:text-xl md:text-2xl text-[#5c4937] mb-8 min-h-10 font-semibold">
             <TypewriterText texts={[
               '200+ 免费在线工具，助力高效工作',
               '本地优先，隐私分级保护',
@@ -151,11 +151,11 @@ export const HomePage: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="搜索你需要的工具..."
-                className="w-full pl-14 pr-28 py-5 rounded-2xl text-[#2f241b] placeholder-[#8b735c] text-lg"
+                className="w-full pl-12 pr-24 py-4 sm:pl-14 sm:pr-28 sm:py-5 rounded-2xl text-[#2f241b] placeholder-[#8b735c] text-base sm:text-lg"
               />
               <button
                 type="submit"
-                className="absolute right-2 px-6 py-3 bg-[#7a421b] text-[#fff8ef] rounded-xl hover:bg-[#5f3214] transition-colors font-semibold shadow-sm"
+                className="absolute right-2 px-4 py-2.5 sm:px-6 sm:py-3 bg-[#7a421b] text-[#fff8ef] rounded-xl hover:bg-[#5f3214] transition-colors font-semibold shadow-sm text-sm sm:text-base"
               >
                 搜索
               </button>
@@ -221,7 +221,7 @@ export const HomePage: React.FC = () => {
 
       <Link
         to="/reports"
-        className="group flex flex-col gap-4 rounded-3xl border border-[#d9c8b6] bg-gradient-to-br from-[#fffaf2] via-white to-[#eef2e5] p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg sm:flex-row sm:items-center sm:justify-between"
+        className="group flex flex-col gap-4 rounded-3xl border border-[#d9c8b6] bg-gradient-to-br from-[#fffaf2] via-white to-[#eef2e5] p-4 sm:p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg sm:flex-row sm:items-center sm:justify-between"
       >
         <div className="flex items-center gap-4">
           <span className="rounded-2xl bg-[#2f241b] p-3 text-white shadow-md">
@@ -243,7 +243,7 @@ export const HomePage: React.FC = () => {
           <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-500/20">
             <Zap className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-3xl font-black text-[#2f241b]">热门工具</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2f241b]">热门工具</h2>
           <span className="text-base text-[#6d5a47]">快速访问常用功能</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
@@ -256,15 +256,15 @@ export const HomePage: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
-                className="min-h-[168px]"
+                className="min-h-[140px] sm:min-h-[168px]"
               >
                 <ToolLink
                   toolId={tool.id}
                   aria-label={`打开${tool.name}`}
-                  className="group block h-full tool-card-enhanced p-5 rounded-2xl glass-card text-left"
+                  className="group block h-full tool-card-enhanced p-4 sm:p-5 rounded-2xl glass-card text-left"
                 >
-                  <div className={`tool-icon inline-flex p-3 rounded-lg bg-gradient-to-br ${tool.gradient} mb-3`}>
-                    <IconComponent className="w-6 h-6 text-white" />
+                  <div className={`tool-icon inline-flex p-2.5 sm:p-3 rounded-lg bg-gradient-to-br ${tool.gradient} mb-3`}>
+                    <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                   <h3 className={`tool-name ${HOME_HOT_TOOL_TITLE_CLASS} truncate`}>
                     {tool.name}
@@ -284,7 +284,7 @@ export const HomePage: React.FC = () => {
           <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#9a5a28] to-[#5f6f42] shadow-lg shadow-[#9a5a28]/20">
             <Layers3 className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-3xl font-black text-[#2f241b]">工具分类</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2f241b]">工具分类</h2>
           <span className="text-base text-[#6d5a47]">按类别浏览所有工具</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -300,12 +300,12 @@ export const HomePage: React.FC = () => {
               >
                 <Link
                   to={`/gj?category=${category.id}`}
-                  className="block tool-card-enhanced p-6 rounded-2xl glass-card group h-full"
+                  className="block tool-card-enhanced p-4 sm:p-6 rounded-2xl glass-card group h-full"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-lg bg-gradient-to-br ${category.gradient} group-hover:scale-110 transition-transform`}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                      <div className={`p-2 sm:p-2.5 rounded-lg bg-gradient-to-br ${category.gradient} group-hover:scale-110 transition-transform`}>
+                        <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                       </div>
                       <div>
                         <h3 className={`${HOME_CATEGORY_TITLE_CLASS} group-hover:text-[#6f3714] transition-colors`}>

@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ai-circle-events",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-25",
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "kv_namespaces": [
+    {
+      "binding": "AI_EVENTS_KV",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID",
+      "preview_id": "REPLACE_WITH_PREVIEW_KV_NAMESPACE_ID"
+    }
+  ],
+  "vars": {
+    "SITE_API_URL": "https://reports.example.invalid/reports-api/api/v1/ingest/x",
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "FXTWITTER_BASE_URL": "https://api.fxtwitter.com"
+  }
+}

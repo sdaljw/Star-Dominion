@@ -179,10 +179,10 @@ export const ToolboxPage: React.FC = () => {
       <div className="space-y-7 max-w-[1500px] mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-black text-[#2f241b]">
+        <h1 className="text-2xl sm:text-4xl font-black text-[#2f241b]">
           {search.trim() ? `搜索: ${search}` : activeCatName}
         </h1>
-        <p className="text-[#6d5a47] text-lg mt-2">
+        <p className="text-[#6d5a47] text-base sm:text-lg mt-2">
           {search.trim()
             ? `找到 ${displayTools.length} 个工具`
             : `共 ${displayTools.length} 个工具 · 大部分工具纯前端处理`
@@ -211,7 +211,7 @@ export const ToolboxPage: React.FC = () => {
                 return syncAssessmentParam(next, activeCategory, val, activeAssessmentGroup);
               }, { replace: true });
             }}
-            className="w-full pl-12 pr-4 py-4 rounded-xl text-[#2f241b] placeholder-[#8b735c] text-lg"
+            className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl text-[#2f241b] placeholder-[#8b735c] text-base sm:text-lg"
           />
           {search && (
             <button
@@ -267,7 +267,7 @@ export const ToolboxPage: React.FC = () => {
       {/* 最近使用 */}
       {!search.trim() && !activeCategory && recentTools.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-2xl font-black text-[#2f241b] mb-3">最近使用</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-[#2f241b] mb-3">最近使用</h2>
           <div className="flex flex-wrap gap-2">
             {recentTools.map(tool => {
               if (!tool) return null;
@@ -287,7 +287,7 @@ export const ToolboxPage: React.FC = () => {
       {/* 收藏工具 */}
       {!search.trim() && !activeCategory && favoriteTools.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-2xl font-black text-[#2f241b] mb-3">收藏工具</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-[#2f241b] mb-3">收藏工具</h2>
           <div className="flex flex-wrap gap-2">
             {favoriteTools.map(tool => {
               if (!tool) return null;

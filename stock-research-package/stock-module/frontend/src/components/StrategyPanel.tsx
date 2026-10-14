@@ -1,15 +1,17 @@
-import type { CandidateSourceStatus, CandidateStock } from "../types";
+import type { CandidateSourceStatus, CandidateStock, MarketLineTag } from "../types";
+import { MarketLineTags } from "./MarketLinePanel";
 
 type Props = {
   items: CandidateStock[];
   sources: CandidateSourceStatus[];
   catalystSymbols: Set<string>;
+  marketLineTags?: Map<string, MarketLineTag[]>;
   refreshing: boolean;
   onOpenDetail: (symbol: string, trigger?: HTMLElement) => void;
   onRefresh: () => void;
 };
 
-export function StrategyPanel({ items, sources, catalystSymbols, refreshing, onOpenDetail, onRefresh }: Props) {
+export function StrategyPanel({ items, sources, catalystSymbols, marketLineTags, refreshing, onOpenDetail, onRefresh }: Props) {
   const strategyItems = items.flatMap((item) => {
     const strategy = item.sources.find((source) => source.source_id === "user_strategy");
     return strategy ? [{ item, strategy }] : [];
@@ -38,6 +40,7 @@ export function StrategyPanel({ items, sources, catalystSymbols, refreshing, onO
               <div><strong>{item.stock.name}</strong><span>{item.stock.symbol}</span></div>
               {catalystSymbols.has(item.stock.symbol) && <em>双重命中</em>}
             </div>
+            <MarketLineTags tags={marketLineTags?.get(item.stock.symbol)} />
             <div className="strategy-score"><span>策略强度</span><b>{strategy.score?.toFixed(0) ?? "命中"}</b></div>
             <p>{strategy.reasons.join(" · ")}</p>
             <button

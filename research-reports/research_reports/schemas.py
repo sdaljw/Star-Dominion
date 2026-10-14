@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Any
+from typing import Literal
+from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 def _camel(value: str) -> str:
@@ -19,6 +21,105 @@ class ApiModel(BaseModel):
         populate_by_name=True,
         from_attributes=True,
     )
+
+
+class StrictApiModel(ApiModel):
+    model_config = ConfigDict(
+        alias_generator=_camel,
+        populate_by_name=True,
+        from_attributes=True,
+        extra="forbid",
+    )
+
+
+class XEventPostInput(StrictApiModel):
+    id: str = Field(min_length=1, max_length=128)
+    author: str = Field(min_length=1, max_length=255)
+    username: str = Field(min_length=1, max_length=64)
+    text: str = Field(min_length=1, max_length=12_000)
+    url: str = Field(min_length=1, max_length=1024)
+    published_at: datetime
+    importance: int = Field(strict=True, ge=0, le=100)
+
+    @field_validator("url")
+    @classmethod
+    def require_https_url(cls, value: str) -> str:
+        parsed = urlsplit(value)
+        if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+            raise ValueError("url must be an HTTPS URL")
+        return value
+
+    @field_validator("published_at")
+    @classmethod
+    def require_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("published_at must include a timezone")
+        return value
+
+
+class XEventInput(StrictApiModel):
+    title: str = Field(min_length=1, max_length=255)
+    summary: str = Field(min_length=1, max_length=4000)
+    importance: int = Field(strict=True, ge=0, le=100)
+    post_ids: list[str] = Field(min_length=1, max_length=100)
+
+
+class XEventSummaryInput(StrictApiModel):
+    title: str = Field(min_length=1, max_length=255)
+    summary: str = Field(min_length=1, max_length=16_000)
+    events: list[XEventInput] = Field(max_length=50)
+    risks: list[str] = Field(max_length=50)
+
+    @field_validator("risks")
+    @classmethod
+    def bound_risk_text(cls, values: list[str]) -> list[str]:
+        if any(not item.strip() or len(item) > 2000 for item in values):
+            raise ValueError("each risk must contain 1 to 2000 characters")
+        return values
+
+
+class XEventIngestRequest(StrictApiModel):
+    provider: Literal["fxtwitter"]
+    model_provider: Literal["google"]
+    model_name: str = Field(min_length=1, max_length=128)
+    posts: list[XEventPostInput] = Field(min_length=1, max_length=100)
+    summary: XEventSummaryInput
+
+
+class XEventPublic(StrictApiModel):
+    title: str
+    summary: str
+    importance: int
+    post_ids: list[str]
+
+
+class XEventReportPublic(StrictApiModel):
+    id: str
+    status: str
+    model_provider: str
+    model_name: str
+    title: str
+    summary: str
+    events: list[XEventPublic]
+    risks: list[str]
+    post_ids: list[dict[str, str]]
+    received_at: datetime
+
+
+class XEventPostPublic(StrictApiModel):
+    provider: str
+    external_id: str
+    author: str
+    username: str
+    text: str
+    canonical_url: str
+    published_at: datetime
+    importance: int
+
+
+class XEventLatestResponse(StrictApiModel):
+    report: XEventReportPublic | None
+    posts: list[XEventPostPublic]
 
 
 class IssueSummary(ApiModel):

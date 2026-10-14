@@ -4,7 +4,54 @@
       <view class="eyebrow">逐梦工具箱 · 原生小程序版</view>
       <view class="hero-title">工具箱</view>
       <view class="hero-description">常用工具，打开即用，数据优先留在当前设备。</view>
-      <search-bar value="{{query}}" bindchange="onSearchInput" />
+      <search-bar
+        value="{{query}}"
+        bindchange="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        bindfocus="onSearchFocus"
+        bindclear="onSearchClear"
+      />
+      <view wx:if="{{searchHistory.length > 0}}" class="search-history">
+        <view class="search-history-heading">
+          <text class="search-history-title">搜索历史</text>
+          <text class="search-history-clear" bindtap="clearSearchHistory">清空</text>
+        </view>
+        <view class="search-history-tags">
+          <text
+            wx:for="{{searchHistory}}"
+            wx:key="text"
+            class="history-tag"
+            data-text="{{item.text}}"
+            bindtap="tapHistoryTag"
+          >{{item.text}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{recentTools.length > 0}}" class="section-heading">
+      <text class="section-title">最近使用</text>
+      <text class="section-count">继续上次</text>
+    </view>
+    <view wx:if="{{recentTools.length > 0}}" class="tool-grid">
+      <tool-card
+        wx:for="{{recentTools}}"
+        wx:key="id"
+        tool="{{item}}"
+        bindtap="openTool"
+      />
+    </view>
+
+    <view class="section-heading">
+      <text class="section-title">热门工具</text>
+      <text class="section-count">{{hotTools.length}} 个精选</text>
+    </view>
+    <view class="tool-grid">
+      <tool-card
+        wx:for="{{hotTools}}"
+        wx:key="id"
+        tool="{{item}}"
+        bindtap="openTool"
+      />
     </view>
 
     <view class="section-heading">
@@ -20,8 +67,11 @@
         bindtap="openCategory"
       >
         <view class="category-card-top">
-          <text class="category-name">{{item.name}}</text>
-          <text class="category-count">{{item.count}} 个工具</text>
+          <view class="category-icon-badge">{{item.icon}}</view>
+          <view class="category-card-meta">
+            <text class="category-name">{{item.name}}</text>
+            <text class="category-count">{{item.count}} 个工具</text>
+          </view>
         </view>
         <text class="category-description">{{item.description}}</text>
         <text class="category-action">查看分类 ›</text>

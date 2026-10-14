@@ -4,6 +4,7 @@ import {
   AUTH_REQUIRED_EVENT,
   buildSiteLoginUrl,
   loadCurrentMomIndex,
+  loadCurrentMarketLine,
   loadMomIndexHistory,
   loadCurrentMorningReport,
   loadMorningReportHistory,
@@ -156,6 +157,17 @@ describe("morning report API contracts", () => {
       2,
       "/stock-api/api/v1/mom-index/history?limit=30",
       expect.objectContaining({ credentials: "include" }),
+    );
+  });
+
+  it("loads the current market-line snapshot without browser-side caching", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(Response.json({ status: "unavailable" }));
+
+    await loadCurrentMarketLine();
+
+    expect(fetch).toHaveBeenCalledWith(
+      "/stock-api/api/v1/market-line/current",
+      expect.objectContaining({ credentials: "include", cache: "no-store" }),
     );
   });
 

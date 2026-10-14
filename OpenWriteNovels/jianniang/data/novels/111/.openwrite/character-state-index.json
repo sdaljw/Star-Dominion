@@ -4,13 +4,13 @@
   "documents": [
     {
       "path": "data/manuscript/arc_001/ch_001.md",
-      "size": 19448,
-      "mtime_ns": 1787745131417481600
+      "size": 19283,
+      "mtime_ns": 1789431773980070000
     },
     {
       "path": "data/manuscript/arc_001/ch_002.md",
-      "size": 9608,
-      "mtime_ns": 1787576672042231500
+      "size": 11991,
+      "mtime_ns": 1789449894953358800
     },
     {
       "path": "src/characters/叶冰瑶.md",

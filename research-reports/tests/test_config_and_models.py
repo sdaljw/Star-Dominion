@@ -21,6 +21,23 @@ def test_settings_resolve_data_dir_and_optional_token(tmp_path: Path) -> None:
     assert settings.database_path == tmp_path.resolve() / "reports.db"
     assert settings.github_token is None
     assert settings.timezone.key == "Asia/Shanghai"
+    assert settings.x_ingest_token is None
+
+
+def test_optional_x_ingest_token_is_hidden_from_settings_repr(tmp_path: Path) -> None:
+    token = "x-ingest-secret-value"
+    settings = Settings.from_env(
+        {
+            "RESEARCH_REPORTS_DATA_DIR": str(tmp_path),
+            "RESEARCH_REPORTS_TIMEZONE": "Asia/Shanghai",
+            "RESEARCH_REPORTS_SITE_AUTH_URL": "http://127.0.0.1:8000",
+            "SITE_AUTH_INTERNAL_KEY": "k" * 32,
+            "RESEARCH_REPORTS_X_INGEST_TOKEN": token,
+        }
+    )
+
+    assert settings.x_ingest_token == token
+    assert token not in repr(settings)
 
 
 def test_settings_reject_short_internal_key(tmp_path: Path) -> None:

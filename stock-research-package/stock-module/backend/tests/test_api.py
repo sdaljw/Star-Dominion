@@ -65,6 +65,19 @@ def test_settings_read_candidate_refresh_time(monkeypatch: pytest.MonkeyPatch, t
     assert settings.candidate_refresh_time == "09:15"
 
 
+def test_settings_read_market_line_refresh_time_and_allow_disabling(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("STOCK_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("STOCK_MARKET_LINE_REFRESH_TIME", "16:00")
+
+    settings = Settings.from_env()
+    assert settings.market_line_refresh_time == "16:00"
+
+    monkeypatch.setenv("STOCK_MARKET_LINE_REFRESH_TIME", "")
+    assert Settings.from_env().market_line_refresh_time is None
+
+
 def test_directory_searches_by_code_and_name_and_excludes_other_boards() -> None:
     directory = InMemoryStockDirectory(
         [

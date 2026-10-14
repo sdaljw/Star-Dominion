@@ -30,6 +30,7 @@ from app.domain.morning_reports import (
 )
 from app.domain.market_data import KlineUnavailable, StockKline
 from app.domain.mom_index import MomIndexHistoryResponse, MomIndexSnapshot
+from app.domain.market_lines import MarketLineSnapshot
 from app.domain.stocks import InvalidMainBoardSymbol
 from app.integrations.candidate_sources import (
     CatalystReportSource,
@@ -52,6 +53,7 @@ from app.repositories.model_profiles import ModelProfileRepository
 from app.repositories.job_leases import JobLeaseRepository
 from app.repositories.kline_cache import KlineRepository
 from app.repositories.mom_index import MomIndexRepository
+from app.repositories.market_lines import MarketLineHistoryRepository
 from app.repositories.stock_directory import StockDirectoryRepository
 from app.security.network_policy import UnsafeModelEndpoint
 from app.security.route_tokens import RouteTokenIssuer
@@ -64,6 +66,7 @@ from app.services.model_profiles import ModelProfileNotFound, ModelProfileServic
 from app.services.morning_reports import MorningReportService, MorningReportUnavailable
 from app.services.kline import KlineService
 from app.services.mom_index import MomIndexService
+from app.services.market_lines import MarketLineService
 from app.services.scheduled_jobs import BackgroundOperationCoordinator, build_scheduler
 from app.services.stock_directory import StockDirectory
 from app.services.stock_directory_refresh import StockDirectoryRefreshService
@@ -84,6 +87,7 @@ def create_app(
     kline_service=None,
     mom_index_service=None,
     mom_refresh_coordinator=None,
+    market_line_service: MarketLineService | None = None,
     xhs_login_service=None,
     scheduler=None,
 ) -> FastAPI:
@@ -121,6 +125,12 @@ def create_app(
         operation=directory_refresher.refresh,
         leases=leases,
     )
+    market_lines = market_line_service or MarketLineService(
+        MarketLineHistoryRepository(
+            configured.user_strategy_snapshot_path.with_name("market-line-history.json")
+        ),
+        configured.user_strategy_snapshot_path,
+    )
     xhs_logins = xhs_login_service or XhsLoginService(xhs_client)
     service = candidate_service or CandidateRefreshService(
         CandidateSnapshotRepository(database_path),
@@ -145,8 +155,10 @@ def create_app(
         mom_refresh=mom_refreshes.start,
         directory_refresh=directory_refreshes.start,
         candidate_refresh=coordinator.start,
+        market_line_refresh=coordinator.start,
         mom_refresh_time=configured.mom_refresh_time,
         candidate_refresh_time=configured.candidate_refresh_time,
+        market_line_refresh_time=configured.market_line_refresh_time,
     )
     if model_profile_service is None:
         profile_repository = ModelProfileRepository(database_path)
@@ -303,6 +315,14 @@ def create_app(
     @application.get("/api/v1/candidates")
     def candidates() -> dict:
         return service.get_candidates().model_dump(mode="json")
+
+    @application.get(
+        "/api/v1/market-line/current",
+        response_model=MarketLineSnapshot,
+    )
+    def current_market_line(response: Response) -> MarketLineSnapshot:
+        response.headers["Cache-Control"] = "no-store"
+        return market_lines.current()
 
     @application.post("/api/v1/candidates/refresh", status_code=status.HTTP_202_ACCEPTED)
     def refresh_candidates(_: SiteIdentity = Depends(current_admin)) -> dict:

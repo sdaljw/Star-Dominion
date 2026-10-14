@@ -153,7 +153,9 @@ def test_small_cap_source_reads_only_small_cap_section_and_keeps_factors(tmp_pat
     assert [item.stock.symbol for item in batch.items] == ["000001"]
     source = batch.items[0].sources[0]
     assert source.score is None
-    assert source.factors["first_volume_spike"] is True
+    assert source.factors["stage"] == "pullback"
+    assert source.factors["rule_version"] == 4
+    assert source.factors["shortlist_qualified"] is True
     assert source.factors["trigger_date"] == "2026-07-27"
 
 
@@ -176,6 +178,17 @@ def test_small_cap_source_rejects_snapshot_marked_as_error(tmp_path: Path) -> No
         SmallCapAbsorptionSnapshotSource(path).load()
 
 
+def test_small_cap_source_does_not_emit_unconsolidated_observation_signals(tmp_path: Path) -> None:
+    path = tmp_path / "strategy.json"
+    path.write_text(json.dumps({
+        "small_cap_status": "ok", "small_cap_stocks": [{
+            "symbol": "000001", "name": "未整理样本", "market_cap": 9e9,
+            "bars": _absorption_bars()[:36],
+        }],
+    }), encoding="utf-8")
+    assert SmallCapAbsorptionSnapshotSource(path).load().items == []
+
+
 def _bar(close: float, pct: float) -> dict[str, float]:
     return {
         "open": close * 0.99,
@@ -194,10 +207,10 @@ def _absorption_bars() -> list[dict[str, object]]:
             {
                 "date": (date(2026, 6, 22) + timedelta(days=index)).isoformat(),
                 "open": 10,
-                "high": 10,
+                "high": 10.3 if index >= 35 else 10,
                 "low": 10,
-                "close": 10,
-                "pct": 0,
+                "close": 10.3 if index == 35 else (10.05 if index >= 36 else 10),
+                "pct": 3 if index == 35 else (-2.4272 if index == 36 else 0),
                 "volume": 200 if index == 35 else 100,
             }
         )

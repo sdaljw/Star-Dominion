@@ -17,6 +17,7 @@ class Settings:
     site_auth_url: str
     site_auth_internal_key: str = field(repr=False)
     github_token: str | None = field(default=None, repr=False)
+    x_ingest_token: str | None = field(default=None, repr=False)
     ai_provider: str = "siliconflow"
     ai_base_url: str = "https://api.siliconflow.cn/v1"
     ai_model: str = "deepseek-v4-flash"
@@ -55,6 +56,7 @@ class Settings:
             raise ValueError("RESEARCH_REPORTS_SITE_AUTH_URL is required")
 
         token = values.get("GITHUB_TOKEN", "").strip() or None
+        x_ingest_token = values.get("RESEARCH_REPORTS_X_INGEST_TOKEN", "").strip() or None
         ai_provider = values.get("RESEARCH_REPORTS_AI_PROVIDER", "siliconflow").strip()
         ai_base_url = values.get("RESEARCH_REPORTS_AI_BASE_URL", "https://api.siliconflow.cn/v1").strip().rstrip("/")
         ai_model = values.get("RESEARCH_REPORTS_AI_MODEL", "deepseek-v4-flash").strip()
@@ -96,6 +98,7 @@ class Settings:
             site_auth_url=auth_url,
             site_auth_internal_key=key,
             github_token=token,
+            x_ingest_token=x_ingest_token,
             ai_provider=ai_provider,
             ai_base_url=ai_base_url,
             ai_model=ai_model,

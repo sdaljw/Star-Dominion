@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "我的",
+  "usingComponents": {
+    "tool-card": "/components/common/tool-card/tool-card"
+  }
+}

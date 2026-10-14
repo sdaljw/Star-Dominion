@@ -18,24 +18,24 @@
       "category": "core_reference",
       "category_label": "补充资料",
       "chunk_ids": [
-        "chunk-b9224c5d996ac2eaf08b7648b1212d46fc684a3e61f1f18f726e8ce01e3a5556",
-        "chunk-52a50a08cf9357fbdb4d4a30cfb483ce1f187fc95cd9d0ebb7916aed009c1f07",
-        "chunk-a60dcaeb7195519862090324e8bd1e10d165ee9c67da1f66f92f01ee3e4fff44",
-        "chunk-6b035a50be5e010b5d9af31cd01a077eb83ec901e03a048e42f70400326667ad",
-        "chunk-967e77991ca29240aa17e665a9c047e1fc9ede7f9b8a76504a1d8e5922fecd12",
-        "chunk-428dfac8b8fade6859856a2dcc6fe9de3467758e9278de586a41704b83f85004",
-        "chunk-375a8d4f38aee72809eec83e2b658017e46720cd03b79dd973aeaff493a65812",
-        "chunk-d87b75441230c9587aa52823175dd82d73195e9cc638df774961c8097b98855e",
-        "chunk-ef5cf3f3ade06fb4fead478ca212bb1f8d97d8660b017239d7888978a0bef03c",
-        "chunk-0ee73f4eb21633cb8024d34f59b00f8efc8c19e8a2eb58c1f71f8b4c39ad6430",
-        "chunk-b8df63e4cc0b01d73950093fb76e7020e1e605d821ec53344e7b04cf8309ad3b",
-        "chunk-f801993543cdde639b1217d03f46d6ac5db25cae17172f71f0ac4e57f23fcf8d",
-        "chunk-d3cefc49e9b014dced447f2e012d9d1cd7d47249d99f003b671b29e420e8fe2a",
-        "chunk-96b0e35834e9c70fef516ea0d2cd64f122754bd9bd0ff32c09349b76173cf9ea",
-        "chunk-fc950ad9558bfc250dd688399f5c035fe672c6a9325d6edefc4da80865fbb303"
+        "chunk-f7de08fb8abb245d4f433eb14cc1ce20679ae4870919ab4d9d1adc0d46fe38c3",
+        "chunk-580f6fcaad88f7a2f75686c83ad73b8b847b5dff429b8a3a920c87ec6cf10b73",
+        "chunk-af0ee454d87a9768fb772b72c95805a56bbb0ac0a96b6169f98d176383f520f1",
+        "chunk-a375164afcaebeae990518b3a9e80cfc1a4d4d7a55566a52ff966f36a7533fc3",
+        "chunk-dcd56a2ab3db1506f21a5d8c3e70cb8520750fec9e3f22598bd70d0aaf436115",
+        "chunk-e5f8beacbc3689b5de676cc10baf7d5d09a7215c8f75a5fa883a12a7afbe656f",
+        "chunk-322821bb969f6a59832f76af8657c3dc40677566aecd1f2a04aa99c9b4e8e0b0",
+        "chunk-c77bbe40c24592ce6360c24eab4f090ba3217a5434d490793e81e7d352584814",
+        "chunk-170a4aa3ad5a5e858f98d709717f6ee3db7b73c3c0d54f5e1b03d55279ca0b93",
+        "chunk-70966141d0ca7834415ed0967c6fa43f6dfdd4c31c12b3aae1df5171e15c8d84",
+        "chunk-31fb89721175cde2ba88c989ec23fa78f059d0d3cf37c5823d0670eded15138c",
+        "chunk-545815725bfbbafff4a4ff8020c5fef56898a9eb75f1ab76bb6cb091df1065b9",
+        "chunk-7e71d370bf95347bc8e45b8d36e3c0d4cab2c9fec13c5cb4cd2d2406ebf130b7",
+        "chunk-3ef585ee662c8233061e9e9e57d9819f5edbce41e6a85696ccd143c8425a113c",
+        "chunk-a0ad05feebf1643e97b07ac925bec94778663b4633781095136c5f5f8986444f"
       ],
-      "doc_id": "doc-5ad4e958f1a6387d7b92243cf45a24540c7147d703df02938692eac325e90849",
-      "revision": "4b22500aad1a5499ad0b91ef2228fbb578dc7f28da9beae00553527b87510aeb",
+      "doc_id": "doc-4f83f2a3cba75d1543eded20c49f656428a7bca5a15262b5fd4ff3a040df0a7e",
+      "revision": "c516f4bde27dd515d29c49856564681d3d3a0f5b353e2f4d2245cae2b36c160c",
       "scope": "chapters",
       "source_key": "openwrite-9015e589c8b02d9aa9c02788.md",
       "title": "ch 001"
@@ -44,17 +44,18 @@
       "category": "core_reference",
       "category_label": "补充资料",
       "chunk_ids": [
-        "chunk-6d15914f82bedbdb46400d67fd1f7f182345c94b69616956b6612f7bb39cae92",
-        "chunk-8e5803336c6670cb4540d70113221e161f659e4c95e465cbd221ad374310032d",
-        "chunk-a6bbc88ed429bdcd00a1bb8e271022e4b3c5ceace4dd59eab8e8022e3f69d0f7",
-        "chunk-0d040294c04f45ed7d28dc6dc19c25377d40025c6697cd1a309f312cc32da66c",
-        "chunk-f8419455328a670b622c264fe68cc8a9869ba9993f607c69683b096038d04220",
-        "chunk-789a17eb05a96b8bf44721de7add8e28d2bc0216c658dd07b57cb8bbf587ee59",
-        "chunk-aa44e59ebcdb9ae5d85fc4d1fde6afb02b7aefdffb7981b1b687e87b65f0eee6",
-        "chunk-19b3d164bfa0d6e4032818e652b2274c55bf770977fa8f5714212f024aaa2aa8"
+        "chunk-8f1a06c45f49790a81057542c3c49c6fbfa4192730f359241ede6eb39ea97557",
+        "chunk-c1736763e83683141b8a9f11800f6b234ea15c948e6d0ada8cf98c3a33ea0946",
+        "chunk-dc3e7c066921f5a2631b5a28e9b46560cf5e7f1999c2e665f67f959235e8ebe4",
+        "chunk-ddfa4d692efe8fab08485fdf85cba38e476ceb4928d2f16ed82be1c1375c4a79",
+        "chunk-974760104588fe0c371d97685a1317ec00178e193ab166eb395d2e4e2c982f5b",
+        "chunk-35d6508c0e17093fcfc92bb6b29df5784458adba2146e5ca6d0a624857f81cdb",
+        "chunk-6091b4c9542848e350fde25d3c21ff35cab2dc7577c8a150f867fee75a76a19a",
+        "chunk-28b1b71f3f9b74d99fabce8b588bdb5c48c9c021f481fc8bdc9b84d8795504c1",
+        "chunk-cbee09b64fb03af06c799c50b18964e75738d7daf46f87d74bbafe246c468040"
       ],
-      "doc_id": "doc-5f32fb176a06278dcb8ec68254b1b61ad912d7e0407b643d5671568336ca7f60",
-      "revision": "e449e3dfbad53f1771d08e05bb41ba2c705adf9bc6785febc73c06cef1767ae7",
+      "doc_id": "doc-df2d07746ace0be0d6f29e35477d0e22339a71c8701d5529ded8a854d3d5212b",
+      "revision": "78faed481271b2a8fad68374da5c5860afb4e08849708922b49290e39ec5d7c8",
       "scope": "chapters",
       "source_key": "openwrite-c9ca69310def0dd3f3207df3.md",
       "title": "ch 002"
@@ -75,11 +76,11 @@
       "category": "continuity_state",
       "category_label": "当前状态",
       "chunk_ids": [
-        "chunk-7e64049c0bf5c59c1a266746cbccd976cbdc830c5b119a62b9f5c85d2c65a022",
-        "chunk-e31007872ff2ca2f9a854e756a511010410f5580c14a27a373ff741fe0bb3e36"
+        "chunk-43fda3c2280f8d84d4b43152eb7d26c8b4ca1b63f5b10caa5e4510f3522d2333",
+        "chunk-afd8cb83486542f218de885354dc31a7da78e3153243d06ceb2c4f6de69e3d99"
       ],
-      "doc_id": "doc-4f774c474712b2e730b287b38991a1e8731e429d8c35453acfd6bf31c8e22ad7",
-      "revision": "2aa96ae099177c166598e65f75b8e0f2b83a4179f8cee498c92f204dde86c63e",
+      "doc_id": "doc-1f385866e356e92128bfc64271fb61d87a2d565011e4f6e61232cc5b5cc655e9",
+      "revision": "1f122a78cb35e74ecd77b7263c09dbb16811e7a0f92e6580f2abae72fa0f95f1",
       "scope": "continuity",
       "source_key": "openwrite-07a83a2f5455f9aa53176fec.md",
       "title": "当前状态"
@@ -88,10 +89,10 @@
       "category": "continuity_relations",
       "category_label": "关系与资源",
       "chunk_ids": [
-        "chunk-a0cadc41c0583c673cfa91e307a33ae892ecf7b452cb1ea0e9f9219eac314cd8"
+        "chunk-4ac5d78482befb2129c770128637020db0f78f832f21444f7c8f88f579297be6"
       ],
-      "doc_id": "doc-7d021ace52bd4d5f7b5ecd84a0eea0f7d047ff49d56801a7f5ebad8f7eeb0fb9",
-      "revision": "425115a472f0d7c0237719f246fdfd1cb6a6296b3a62e0e5498e29585413a147",
+      "doc_id": "doc-c74f4983d37feee4437d1156bda5cbb024708257b42d77e225322a297b51d73f",
+      "revision": "ff87af3173a7f626ec3887b539979d97e753ffc1ed6aaa9ceacd70a4bbf6ad1d",
       "scope": "continuity",
       "source_key": "openwrite-72d0713540fb3431e6bf847c.md",
       "title": "资源账本"

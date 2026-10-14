@@ -39,6 +39,7 @@ class Settings:
     market_proxy: str | None = None
     mom_refresh_time: str = "08:30"
     candidate_refresh_time: str = "09:00"
+    market_line_refresh_time: str | None = "15:30"
     timezone_name: str = "Asia/Shanghai"
 
     @classmethod
@@ -128,6 +129,9 @@ class Settings:
             timeout_seconds=1800,
         )
         commands = tuple(command for command in (catalyst_command, strategy_command) if command is not None)
+        market_line_refresh_time = os.environ.get(
+            "STOCK_MARKET_LINE_REFRESH_TIME", "15:30"
+        ).strip() or None
         return cls(
             data_dir=data_dir,
             catalyst_report_path=catalyst_report_path,
@@ -160,6 +164,7 @@ class Settings:
             market_proxy=os.environ.get("STOCK_MARKET_PROXY") or None,
             mom_refresh_time=os.environ.get("STOCK_MOM_REFRESH_TIME", "08:30"),
             candidate_refresh_time=os.environ.get("STOCK_CANDIDATE_REFRESH_TIME", "09:00"),
+            market_line_refresh_time=market_line_refresh_time,
             timezone_name=os.environ.get("STOCK_TIMEZONE", "Asia/Shanghai"),
         )
 

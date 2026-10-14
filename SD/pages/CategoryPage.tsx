@@ -34,14 +34,14 @@ export const CategoryPage: React.FC = () => {
     <>
       <PageSeo metadata={buildCategoryMetadata(category)} />
       <div className="min-h-screen mesh-bg">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Hero */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${category.gradient} mb-6 shadow-lg shadow-[#9a5a28]/15`}>
-            <CatIcon className="w-10 h-10 text-white" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-12">
+          <div className={`inline-flex p-3 sm:p-4 rounded-2xl bg-gradient-to-br ${category.gradient} mb-6 shadow-lg shadow-[#9a5a28]/15`}>
+            <CatIcon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
-          <h1 className="text-5xl font-black text-[#2f241b] mb-4">{category.name}大全</h1>
-           <p className="text-lg text-[#6d5a47] max-w-2xl mx-auto leading-relaxed">{desc.description}</p>
+          <h1 className="text-3xl sm:text-5xl font-black text-[#2f241b] mb-4">{category.name}大全</h1>
+           <p className="text-base sm:text-lg text-[#6d5a47] max-w-2xl mx-auto leading-relaxed">{desc.description}</p>
         </motion.div>
 
         {/* Features */}
@@ -58,7 +58,7 @@ export const CategoryPage: React.FC = () => {
 
         {/* Tools Grid */}
         <div className="mb-12">
-          <h2 className="text-3xl font-black text-[#2f241b] mb-6">全部{category.name}工具</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2f241b] mb-6">全部{category.name}工具</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tools.map((tool, index) => {
               const ToolIcon = getIcon(tool.icon);
@@ -77,8 +77,8 @@ export const CategoryPage: React.FC = () => {
                         <ToolIcon className="w-5 h-5 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-lg font-bold text-[#2f241b] group-hover:text-[#6f3714] transition-colors truncate">{tool.name}</h3>
-                        <p className="text-base text-[#6d5a47] mt-1 line-clamp-2">{tool.description}</p>
+                        <h3 className="text-base sm:text-lg font-bold text-[#2f241b] group-hover:text-[#6f3714] transition-colors truncate">{tool.name}</h3>
+                        <p className="text-sm sm:text-base text-[#6d5a47] mt-1 line-clamp-2">{tool.description}</p>
                       </div>
                     </div>
                   </ToolLink>
@@ -90,8 +90,8 @@ export const CategoryPage: React.FC = () => {
 
         {/* FAQ */}
         {desc.faq.length > 0 && (
-          <div className="glass-card rounded-2xl p-8 mb-12">
-            <h2 className="text-3xl font-black text-[#2f241b] mb-6">常见问题</h2>
+          <div className="glass-card rounded-2xl p-5 sm:p-8 mb-12">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#2f241b] mb-6">常见问题</h2>
             <div className="space-y-6">
               {desc.faq.map((faq, i) => (
                 <div key={i} className="border-b border-[#dcc2a3] pb-6 last:border-0 last:pb-0">

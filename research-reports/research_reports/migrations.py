@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from sqlalchemy.engine import Connection, Engine
 
-CURRENT_SCHEMA_VERSION = 1
+from .models import XEventReport, XPost
+
+CURRENT_SCHEMA_VERSION = 2
 
 
 class MigrationError(RuntimeError):
@@ -43,13 +45,18 @@ def _migrate_v1(connection: Connection) -> None:
         connection.exec_driver_sql("ALTER TABLE ai_reports ADD COLUMN risks_json JSON")
 
 
+def _migrate_v2(connection: Connection) -> None:
+    XPost.__table__.create(connection, checkfirst=True)
+    XEventReport.__table__.create(connection, checkfirst=True)
+
+
 def run_migrations(engine: Engine) -> None:
     """Apply all migrations newer than the recorded schema version."""
 
     with engine.begin() as connection:
         _ensure_metadata_table(connection)
 
-    migrations = {1: _migrate_v1}
+    migrations = {1: _migrate_v1, 2: _migrate_v2}
     with engine.connect() as connection:
         current = int(
             connection.exec_driver_sql(

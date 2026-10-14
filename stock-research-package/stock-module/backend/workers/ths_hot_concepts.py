@@ -1,8 +1,8 @@
 """Collect and rank hot stock concepts published by Tonghuashun."""
 
 from collections.abc import Callable
-from dataclasses import dataclass
-from datetime import date
+from dataclasses import dataclass, replace
+from datetime import date, datetime
 from importlib.resources import files
 from io import StringIO
 import json
@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -45,6 +46,8 @@ class ConceptSnapshot:
     up_count: int
     down_count: int
     members: tuple[ConceptMember, ...]
+    hot_rank: int = 0
+    acquired_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -62,9 +65,14 @@ def collect_ths_hot_stock_pool(
     cache_path: Path | None,
     http_get: Callable[..., Any] | None = None,
     today: date | None = None,
+    now: datetime | None = None,
+    concepts_output: list[ConceptSnapshot] | None = None,
 ) -> dict[str, StockSeedData]:
-    current_date = today or date.today()
-    concepts = _load_cached_concepts(cache_path, current_date, top_concepts)
+    shanghai = ZoneInfo("Asia/Shanghai")
+    started = now or datetime.now(shanghai)
+    started = started.replace(tzinfo=shanghai) if started.tzinfo is None else started.astimezone(shanghai)
+    current_date = today or started.date()
+    concepts = _load_cached_concepts(cache_path, current_date, top_concepts, now=started)
     if concepts is None:
         token = _generate_hexin_v()
         session: requests.Session | None = None
@@ -88,8 +96,11 @@ def collect_ths_hot_stock_pool(
         finally:
             if session is not None:
                 session.close()
+        concepts = [replace(concept, acquired_at=started) for concept in concepts]
         if concepts:
             _write_cached_concepts(cache_path, current_date, top_concepts, concepts)
+    if concepts_output is not None:
+        concepts_output.extend(concepts)
     if not concepts:
         return {}
     return _build_stock_pool(concepts, max_stocks=max_stocks)
@@ -152,7 +163,7 @@ def _fetch_concepts(
         for row in names.to_dict(orient="records")
     }
     concepts: list[ConceptSnapshot] = []
-    for row in hot_rows:
+    for hot_rank, row in enumerate(hot_rows, 1):
         name = str(row["name"])
         code = code_by_name.get(name)
         if not code:
@@ -168,7 +179,7 @@ def _fetch_concepts(
                 timeout=20,
             )
             detail.raise_for_status()
-            snapshot = parse_concept_detail(name, code, detail.text)
+            snapshot = replace(parse_concept_detail(name, code, detail.text), hot_rank=hot_rank)
         except Exception:
             continue
         if snapshot.members:
@@ -224,6 +235,8 @@ def _load_cached_concepts(
     cache_path: Path | None,
     current_date: date,
     top_concepts: int,
+    *,
+    now: datetime,
 ) -> list[ConceptSnapshot] | None:
     if cache_path is None or not cache_path.exists():
         return None
@@ -233,7 +246,18 @@ def _load_cached_concepts(
             return None
         if int(payload.get("top_concepts", 0)) < top_concepts:
             return None
-        return [_concept_from_dict(item) for item in payload.get("concepts", [])]
+        concepts = [_concept_from_dict(item) for item in payload.get("concepts", [])]
+        for concept in concepts:
+            acquired = concept.acquired_at
+            if acquired is not None:
+                if acquired.tzinfo is None:
+                    return None
+                acquired = acquired.astimezone(ZoneInfo("Asia/Shanghai"))
+                if acquired > now or acquired.date() != current_date:
+                    return None
+            if now.hour >= 15 and (acquired is None or acquired.hour < 15):
+                return None
+        return concepts
     except (OSError, TypeError, ValueError, json.JSONDecodeError):
         return None
 
@@ -269,6 +293,8 @@ def _concept_to_dict(concept: ConceptSnapshot) -> dict[str, object]:
         "turnover_yi": concept.turnover_yi,
         "up_count": concept.up_count,
         "down_count": concept.down_count,
+        "hot_rank": concept.hot_rank,
+        "acquired_at": concept.acquired_at.isoformat() if concept.acquired_at is not None else None,
         "members": [
             {"symbol": item.symbol, "name": item.name, "pct": item.pct}
             for item in concept.members
@@ -293,6 +319,8 @@ def _concept_from_dict(payload: dict[str, object]) -> ConceptSnapshot:
         up_count=int(payload["up_count"]),
         down_count=int(payload["down_count"]),
         members=members,
+        hot_rank=int(payload.get("hot_rank", 0)),
+        acquired_at=datetime.fromisoformat(str(payload["acquired_at"])) if payload.get("acquired_at") else None,
     )
 
 

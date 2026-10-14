@@ -14,6 +14,7 @@ from .ai_client import SiliconFlowClient
 from .config import Settings
 from .database import create_database
 from .routes.admin import router as admin_router
+from .routes.ingest import router as x_events_router
 from .routes.public import router as public_router
 from .services.collections import CollectionService
 from .services.scheduler import (
@@ -103,6 +104,7 @@ def create_app(
     app.state.site_auth_client = verifier
     app.state.ai_client = ai_client
     app.include_router(public_router)
+    app.include_router(x_events_router)
     app.include_router(admin_router)
 
     @app.get("/health")

@@ -31,46 +31,29 @@ class CandidateRefreshService:
     ) -> None:
         self._repository = repository
         self._sources = sources
-        self._last_statuses: dict[str, CandidateSourceStatus] = {}
 
     def refresh(self) -> CandidateCollection:
-        statuses: dict[str, CandidateSourceStatus] = {}
         for source in self._sources:
             try:
                 batch = source.load()
                 self._repository.save(batch)
-                statuses[source.source_id] = CandidateSourceStatus(
-                    source_id=source.source_id,
-                    source_name=source.source_name,
-                    status="ok",
-                    generated_at=batch.generated_at,
-                )
             except Exception as exc:
-                previous = self._repository.load(source.source_id)
-                statuses[source.source_id] = CandidateSourceStatus(
-                    source_id=source.source_id,
-                    source_name=source.source_name,
-                    status="stale" if previous else "error",
-                    generated_at=previous.generated_at if previous else None,
-                    error=str(exc),
-                )
-        self._last_statuses = statuses
+                self._repository.record_failure(source.source_id, str(exc))
         return self.get_candidates()
 
     def get_candidates(self) -> CandidateCollection:
         items: list[CandidateStock] = []
         statuses: list[CandidateSourceStatus] = []
         for source in self._sources:
-            batch = self._repository.load(source.source_id)
+            batch, failure = self._repository.load_state(source.source_id)
             if batch:
                 items.extend(batch.items)
-            status = self._last_statuses.get(source.source_id)
-            if status is None:
-                status = CandidateSourceStatus(
-                    source_id=source.source_id,
-                    source_name=source.source_name,
-                    status="ok" if batch else "not_configured",
-                    generated_at=batch.generated_at if batch else None,
-                )
+            status = CandidateSourceStatus(
+                source_id=source.source_id,
+                source_name=source.source_name,
+                status=("stale" if batch else "error") if failure is not None else ("ok" if batch else "not_configured"),
+                generated_at=batch.generated_at if batch else None,
+                error=failure,
+            )
             statuses.append(status)
         return CandidateCollection(items=merge_candidates(items), sources=statuses)

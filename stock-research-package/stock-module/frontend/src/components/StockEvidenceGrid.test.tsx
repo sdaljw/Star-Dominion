@@ -36,3 +36,12 @@ test("renders structured small-cap factors in stock evidence", () => {
   expect(screen.getByText("2.40 倍")).toBeInTheDocument();
   expect(screen.getByText("90.00 亿元")).toBeInTheDocument();
 });
+
+test("shows the V4 stage and distinguishes a setup from an entry signal", () => {
+  render(<StockEvidenceGrid context={{ symbol: "600002", name: "精筛样本", exchange: "SSE", cross_hit: false,
+    sources: [{ source_id: "small_cap_absorption", source_name: "小市值倍量吸筹", score: null, reasons: [],
+      factors: { rule_version: 4, stage: "pullback", entry_signal: "待放量确认" } }], catalyst: null,
+  } as StockResearchContext} />);
+  expect(screen.getByText("阶段：缩量守位")).toBeInTheDocument();
+  expect(screen.getByText("待放量确认")).toBeInTheDocument();
+});

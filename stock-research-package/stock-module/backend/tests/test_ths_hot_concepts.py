@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -103,6 +103,7 @@ def test_collect_ths_pool_uses_headers_limits_boards_and_reuses_daily_cache(tmp_
         return FakeResponse(DETAIL_HTML)
 
     cache_path = tmp_path / "ths-concepts.json"
+    concepts_output: list[ConceptSnapshot] = []
     pool = collect_ths_hot_stock_pool(
         FakeAkshare(),
         top_concepts=1,
@@ -110,14 +111,20 @@ def test_collect_ths_pool_uses_headers_limits_boards_and_reuses_daily_cache(tmp_
         cache_path=cache_path,
         http_get=fake_get,
         today=date(2026, 7, 28),
+        now=datetime.fromisoformat("2026-07-28T09:00:00+08:00"),
+        concepts_output=concepts_output,
     )
 
     assert pool["600001"].concepts == ["机器人"]
+    assert [(item.name, item.code) for item in concepts_output] == [("机器人", "301024")]
+    assert concepts_output[0].hot_rank == 1
+    assert concepts_output[0].members[0].symbol == "600001"
     assert len(calls) == 2
     assert calls[0][1]["X-Requested-With"] == "XMLHttpRequest"
     assert calls[0][1]["hexin-v"]
     assert "data.10jqka.com.cn/funds/gnzjl/" in calls[0][1]["Referer"]
 
+    cached_concepts: list[ConceptSnapshot] = []
     cached = collect_ths_hot_stock_pool(
         FakeAkshare(),
         top_concepts=1,
@@ -125,9 +132,12 @@ def test_collect_ths_pool_uses_headers_limits_boards_and_reuses_daily_cache(tmp_
         cache_path=cache_path,
         http_get=lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("unexpected HTTP request")),
         today=date(2026, 7, 28),
+        now=datetime.fromisoformat("2026-07-28T09:00:00+08:00"),
+        concepts_output=cached_concepts,
     )
 
     assert cached == pool
+    assert [item.hot_rank for item in cached_concepts] == [1]
     assert len(calls) == 2
 
     collect_ths_hot_stock_pool(
@@ -137,6 +147,7 @@ def test_collect_ths_pool_uses_headers_limits_boards_and_reuses_daily_cache(tmp_
         cache_path=cache_path,
         http_get=fake_get,
         today=date(2026, 7, 29),
+        now=datetime.fromisoformat("2026-07-29T09:00:00+08:00"),
     )
     assert len(calls) == 4
 
@@ -165,6 +176,7 @@ def test_collect_ths_pool_skips_one_failed_concept_detail(tmp_path: Path) -> Non
             return FakeResponse("", error=ConnectionError("one board unavailable"))
         return FakeResponse(DETAIL_HTML.replace("600001", "600002").replace("甲公司", "乙公司"))
 
+    concepts_output: list[ConceptSnapshot] = []
     pool = collect_ths_hot_stock_pool(
         FakeAkshare(),
         top_concepts=2,
@@ -172,10 +184,12 @@ def test_collect_ths_pool_skips_one_failed_concept_detail(tmp_path: Path) -> Non
         cache_path=tmp_path / "ths-concepts.json",
         http_get=fake_get,
         today=date(2026, 7, 28),
+        concepts_output=concepts_output,
     )
 
     assert list(pool) == ["600002"]
     assert pool["600002"].concepts == ["人工智能"]
+    assert concepts_output[0].hot_rank == 2
 
 
 def test_collect_ths_pool_primes_source_and_retries_fund_flow_failure(tmp_path: Path) -> None:

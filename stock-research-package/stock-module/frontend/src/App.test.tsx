@@ -5,6 +5,7 @@ import App from "./App";
 
 const mocks = vi.hoisted(() => ({
   loadCandidates: vi.fn(),
+  loadCurrentMarketLine: vi.fn(),
   loadCurrentMorningReport: vi.fn(),
   loadCurrentMomIndex: vi.fn(),
   loadMomIndexHistory: vi.fn(),
@@ -206,6 +207,15 @@ beforeEach(() => {
   });
   mocks.loadMorningReport.mockResolvedValue(structuredClone(fullReport));
   mocks.loadCandidates.mockResolvedValue(structuredClone(candidateCollection));
+  mocks.loadCurrentMarketLine.mockResolvedValue({
+    status: "unavailable",
+    as_of_date: null,
+    generated_at: null,
+    source: null,
+    market_environment: { label: "暂无数据", advancing: 0, declining: 0, flat: 0, limit_up_count: 0 },
+    hot_concept_ranks: {},
+    lines: [],
+  });
   mocks.loadModelProfiles.mockResolvedValue([]);
   mocks.loadCurrentMomIndex.mockRejectedValue(new Error("暂无真实宝妈指数"));
   mocks.loadMomIndexHistory.mockResolvedValue({ items: [] });
@@ -255,7 +265,7 @@ test("shows 九点猫研 as the primary workspace and removes anchor navigation"
   expect(screen.queryByRole("link", { name: "候选雷达" })).not.toBeInTheDocument();
 });
 
-test("uses a dedicated fixed-height shell for the stock workspace", async () => {
+test("uses a dedicated shell for the stock workspace", async () => {
   render(<App />);
 
   await screen.findByRole("button", { name: /API/ });
@@ -263,11 +273,58 @@ test("uses a dedicated fixed-height shell for the stock workspace", async () => 
   expect(document.querySelector(".research-main-grid")).toBeInTheDocument();
 });
 
+test("places the strategy pools below the morning research and news", async () => {
+  render(<App />);
+
+  await screen.findByRole("heading", { name: "九点猫研 · 今日晨报" });
+  const overview = document.querySelector(".research-overview-grid");
+  const marketLine = document.querySelector(".market-line-panel");
+  const strategyZone = document.querySelector(".research-strategy-grid");
+
+  expect(overview?.querySelector(".morning-panel")).toBeInTheDocument();
+  expect(overview?.querySelector(".news-panel")).toBeInTheDocument();
+  expect(strategyZone?.querySelector(".strategy-panel")).toBeInTheDocument();
+  expect(strategyZone?.querySelector(".small-cap-panel")).toBeInTheDocument();
+  expect(marketLine).toBeInTheDocument();
+  expect(overview && strategyZone && (overview.compareDocumentPosition(strategyZone) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
+  expect(overview && marketLine && (overview.compareDocumentPosition(marketLine) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
+  expect(marketLine && strategyZone && (marketLine.compareDocumentPosition(strategyZone) & Node.DOCUMENT_POSITION_FOLLOWING)).toBeTruthy();
+});
+
 test("keeps the full mom index row at its natural height", async () => {
   render(<App />);
 
   await screen.findByRole("heading", { name: "宝妈指数" });
   expect(document.querySelector(".dashboard-top-grid")).toHaveClass("dashboard-top-grid--natural");
+});
+
+test("adds fresh market-line context to exact matching strategy and small-cap candidates", async () => {
+  mocks.loadCandidates.mockResolvedValueOnce(structuredClone(smallCapCandidateCollection));
+  mocks.loadCurrentMarketLine.mockResolvedValueOnce({
+    status: "fresh",
+    as_of_date: "2026-09-24",
+    generated_at: "2026-09-24T16:00:00+08:00",
+    source: "同花顺",
+    market_environment: { label: "偏强", advancing: 700, declining: 300, flat: 20, limit_up_count: 50 },
+    hot_concept_ranks: { 算力: 1 },
+    lines: [{
+      name: "算力", code: "301024", source_rank: 1, score: 76, label: "主线候选", rank: 1,
+      pct: 4, turnover_yi: 100, up_count: 70, down_count: 30, breadth_score: 70,
+      persistence_count: 3, ladder_score: 72, activity_score: 80,
+      ladder_tiers: { first_board: 3, second_board: 1, three_plus_board: 0 },
+      known_bar_count: 30, eligible_small_cap_count: 40,
+      eligible_member_symbols: ["000400", "600001"],
+      members: [
+        { symbol: "000400", name: "许继电气", pct: 10, consecutive_boards: 1, market_cap_yuan: 5e9 },
+        { symbol: "600001", name: "小市值样本", pct: 10, consecutive_boards: 1, market_cap_yuan: 5e9 },
+      ],
+    }],
+  });
+
+  render(<App />);
+
+  fireEvent.click(await screen.findByRole("tab", { name: "全部 1" }));
+  await waitFor(() => expect(screen.getAllByText("主线候选 · 算力")).toHaveLength(2));
 });
 
 test("does not render the retired 九研与策略交叉命中 panel", async () => {
@@ -315,8 +372,9 @@ test("keeps the small-cap strategy in its own column and opens the shared detail
   render(<App />);
 
   expect(await screen.findByRole("heading", { name: "我的选股策略" })).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "小市值倍量吸筹" })).toBeInTheDocument();
-  expect(await screen.findByText("首日倍量")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "小市值倍量吸筹" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: /全部/ }));
+  expect(await screen.findAllByText("首日倍量")).toHaveLength(2);
   expect(document.querySelector(".strategy-panel")?.textContent).not.toContain("小市值样本");
 
   fireEvent.click(screen.getByRole("button", { name: /查看 小市值样本 600001 详情/ }));
@@ -337,7 +395,8 @@ test("shows the small-cap stale state without hiding its retained candidate", as
 
   render(<App />);
 
-  expect(await screen.findByText(/沿用上一份小市值快照/)).toBeInTheDocument();
+    expect(await screen.findByText(/沿用上一份小市值快照/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: /全部/ }));
   expect(screen.getByText("小市值样本")).toBeInTheDocument();
 });
 
@@ -449,3 +508,20 @@ test("shows live refresh step while a worker is still running", async () => {
 
   expect(await screen.findByText("正在运行 九点猫研（1/2）")).toBeInTheDocument();
 });
+
+test.each(["succeeded", "partial"] as const)(
+  "reloads market-line data after a %s candidate refresh",
+  async (status) => {
+    mocks.refreshMorningReport.mockResolvedValueOnce({
+      task_id: `refresh-${status}`,
+      status,
+      message: "刷新完成",
+    });
+    render(<App />);
+    await waitFor(() => expect(mocks.loadCurrentMarketLine).toHaveBeenCalledTimes(1));
+
+    fireEvent.click(await screen.findByRole("button", { name: "运行九点猫研" }));
+
+    await waitFor(() => expect(mocks.loadCurrentMarketLine).toHaveBeenCalledTimes(2));
+  },
+);

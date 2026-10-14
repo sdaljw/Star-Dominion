@@ -2,8 +2,25 @@
   "pages": [
     "pages/home/index",
     "pages/category/index",
-    "pages/tool/index"
+    "pages/tool/index",
+    "pages/profile/index"
   ],
+  "tabBar": {
+    "color": "#9b8775",
+    "selectedColor": "#9a5a28",
+    "backgroundColor": "#fffaf2",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "逐梦工具箱",

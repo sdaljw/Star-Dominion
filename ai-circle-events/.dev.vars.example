@@ -1,0 +1,9 @@
+# Copy to .dev.vars for local development. Replace every placeholder locally.
+GEMINI_API_KEY=REPLACE_WITH_GEMINI_API_KEY
+SITE_PUSH_TOKEN=REPLACE_WITH_THE_SERVER_INGEST_TOKEN
+MANUAL_TRIGGER_TOKEN=REPLACE_WITH_A_SEPARATE_RANDOM_TOKEN
+
+# Must be the public HTTPS route to the research-reports service.
+SITE_API_URL=https://your-domain.example/reports-api/api/v1/ingest/x
+GEMINI_MODEL=gemini-2.5-flash
+FXTWITTER_BASE_URL=https://api.fxtwitter.com

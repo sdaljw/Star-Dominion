@@ -90,8 +90,10 @@ def build_scheduler(
     mom_refresh: Callable[[], object],
     directory_refresh: Callable[[], object],
     candidate_refresh: Callable[[], object] | None = None,
+    market_line_refresh: Callable[[], object] | None = None,
     mom_refresh_time: str = "08:30",
     candidate_refresh_time: str = "09:00",
+    market_line_refresh_time: str | None = "15:30",
 ) -> BackgroundScheduler:
     hour_text, minute_text = mom_refresh_time.split(":", maxsplit=1)
     scheduler = BackgroundScheduler(timezone=timezone_name)
@@ -124,6 +126,19 @@ def build_scheduler(
             id="candidate-refresh",
             hour=int(candidate_hour_text),
             minute=int(candidate_minute_text),
+            replace_existing=True,
+            coalesce=True,
+            max_instances=1,
+        )
+    if market_line_refresh is not None and market_line_refresh_time is not None:
+        market_hour_text, market_minute_text = market_line_refresh_time.split(":", maxsplit=1)
+        scheduler.add_job(
+            market_line_refresh,
+            "cron",
+            id="market-line-refresh",
+            day_of_week="mon-fri",
+            hour=int(market_hour_text),
+            minute=int(market_minute_text),
             replace_existing=True,
             coalesce=True,
             max_instances=1,

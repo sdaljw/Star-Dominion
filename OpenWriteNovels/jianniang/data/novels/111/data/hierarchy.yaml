@@ -132,7 +132,7 @@ chapters:
   - 井下的回声来自什么
   - 水源是否会暴露领地位置
 - id: ch_004
-  title: 第四章 保护罩里的脚印
+  title: 第四章 哥布林
   section_id: sec_002
   summary: 环境侦察与保护边界
   dramatic_position: 承
@@ -152,7 +152,7 @@ chapters:
   - 脚印来自什么目标
   - 保护罩外是否有领主在观察
 - id: ch_005
-  title: 第五章 没有油的第二天
+  title: 第五章 废弃的货车
   section_id: sec_002
   summary: 燃油需求和魔方感应的限制
   dramatic_position: 承
@@ -172,7 +172,7 @@ chapters:
   - 感应到的东西是否是心智魔方
   - 燃油节点是否被魔物占据
 - id: ch_006
-  title: 第六章 先把栅栏补起来
+  title: 第六章 再战岩蜥
   section_id: sec_002
   summary: 资源优先级和领地边界
   dramatic_position: 合
@@ -191,7 +191,7 @@ chapters:
   hooks:
   - 栅栏外出现的矿物痕迹是否值得冒险
 - id: ch_007
-  title: 第七章 第一次轮换
+  title: 第七章 构件重塑
   section_id: sec_003
   summary: 侦察、休息和战斗轮换
   dramatic_position: 起
@@ -211,7 +211,7 @@ chapters:
   hooks:
   - 戈壁深处出现的非魔物光源是什么
 - id: ch_008
-  title: 第八章 一块不属于这里的金属
+  title: 第八章 哥布林货场
   section_id: sec_003
   summary: 信息可信度与前人痕迹
   dramatic_position: 承
@@ -231,7 +231,7 @@ chapters:
   - 留言是谁写的
   - 前人是否真的离开了试炼区
 - id: ch_009
-  title: 第九章 要不要回应
+  title: 第九章 空手而归？
   section_id: sec_003
   summary: 对外关系的第一次选择
   dramatic_position: 转
@@ -251,7 +251,7 @@ chapters:
   - 对方知道多少
   - 这次信号是求生者还是诱饵发出的
 - id: ch_010
-  title: 第十章 把今天的账记下来
+  title: 第十章 第一笔长期生意
   section_id: sec_003
   summary: 资源账与阶段复盘
   dramatic_position: 起

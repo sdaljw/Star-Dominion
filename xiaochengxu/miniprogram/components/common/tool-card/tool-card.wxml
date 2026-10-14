@@ -1,5 +1,5 @@
 <view class="tool-card" bindtap="onTap">
-  <view class="tool-icon">✦</view>
+  <view class="tool-icon">{{emoji}}</view>
   <text class="tool-name">{{tool.name}}</text>
   <text class="tool-description">{{tool.description}}</text>
 </view>

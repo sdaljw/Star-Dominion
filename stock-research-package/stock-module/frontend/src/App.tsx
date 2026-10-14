@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import {
   loadCandidates,
+  loadCurrentMarketLine,
   loadCurrentMomIndex,
   loadCurrentMorningReport,
   loadModelProfiles,
@@ -21,6 +22,7 @@ import { AnalysisReport } from "./components/AnalysisReport";
 import { HistoryEvidence } from "./components/HistoryEvidence";
 import { ImportantNews } from "./components/ImportantNews";
 import { ModelSettingsPanel } from "./components/ModelSettingsPanel";
+import { MarketLinePanel } from "./components/MarketLinePanel";
 import { MomIndexPanel } from "./components/MomIndexPanel";
 import { MorningReportPanel } from "./components/MorningReportPanel";
 import { MorningNewspaper } from "./components/MorningNewspaper";
@@ -30,10 +32,12 @@ import { StrategyPanel } from "./components/StrategyPanel";
 import { StockResearchModal } from "./components/StockResearchModal";
 import { WorkspaceHeader } from "./components/WorkspaceHeader";
 import { filterCatalystCandidates, isAuthenticatedResponse } from "./viewRules";
+import { mainlineTagsBySymbol } from "./marketLineView";
 import type {
   AnalysisTask,
   CandidateResponse,
   ModelProfile,
+  MarketLineSnapshot,
   MomIndexSnapshot,
   MorningReport,
   MorningReportHistoryResponse,
@@ -83,6 +87,8 @@ function StockWorkspace() {
   const [morningReport, setMorningReport] = useState<MorningReport | null>(null);
   const [morningHistory, setMorningHistory] = useState<MorningReportHistoryResponse>({ items: [] });
   const [candidates, setCandidates] = useState<CandidateResponse>(emptyCandidates);
+  const [marketLine, setMarketLine] = useState<MarketLineSnapshot | null>(null);
+  const [marketLineError, setMarketLineError] = useState("");
   const [profiles, setProfiles] = useState<ModelProfile[]>([]);
   const [momSnapshot, setMomSnapshot] = useState<MomIndexSnapshot | null>(null);
   const [momHistory, setMomHistory] = useState<MomIndexSnapshot[]>([]);
@@ -117,6 +123,16 @@ function StockWorkspace() {
       setCandidates(await loadCandidates());
     } catch (reason) {
       setCandidateError((reason as Error).message);
+    }
+  }, []);
+
+  const reloadMarketLine = useCallback(async () => {
+    setMarketLineError("");
+    try {
+      setMarketLine(await loadCurrentMarketLine());
+    } catch (reason) {
+      setMarketLine(null);
+      setMarketLineError((reason as Error).message);
     }
   }, []);
 
@@ -160,6 +176,7 @@ function StockWorkspace() {
 
   useEffect(() => { void reloadMorning(); }, [reloadMorning]);
   useEffect(() => { void reloadCandidates(); }, [reloadCandidates]);
+  useEffect(() => { void reloadMarketLine(); }, [reloadMarketLine]);
   useEffect(() => { void reloadHistory(); }, [reloadHistory]);
   useEffect(() => { void reloadProfiles(false); }, [reloadProfiles]);
   useEffect(() => { void reloadMomIndex(); }, [reloadMomIndex]);
@@ -194,7 +211,7 @@ function StockWorkspace() {
       if (["queued", "running"].includes(task.status)) throw new Error("刷新等待超时");
       setRefreshMessage(task.message ?? (task.status === "failed" ? "刷新失败" : "刷新完成"));
       if (task.status === "succeeded" || task.status === "partial") {
-        await Promise.all([reloadMorning(), reloadCandidates(), reloadHistory()]);
+        await Promise.all([reloadMorning(), reloadCandidates(), reloadHistory(), reloadMarketLine()]);
       }
     } catch (reason) {
       setRefreshMessage((reason as Error).message);
@@ -254,6 +271,10 @@ function StockWorkspace() {
     () => new Set(filterCatalystCandidates(morningReport?.catalyst_candidates ?? []).map((item) => item.symbol)),
     [morningReport],
   );
+  const candidateMarketLineTags = useMemo(
+    () => mainlineTagsBySymbol(marketLine),
+    [marketLine],
+  );
   const openDetail = (symbol: string, trigger?: HTMLElement) => {
     detailTrigger.current = trigger ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setDetailSymbol(symbol);
@@ -309,29 +330,36 @@ function StockWorkspace() {
             />
           </div>
           <div className="research-main-grid">
-            <MorningReportPanel
-              report={morningReport}
-              error={morningError}
-              refreshing={refreshing}
-              onOpenDetail={openDetail}
-              onRefresh={() => void refreshAll()}
-            />
-            <StrategyPanel
-              items={candidates.items}
-              sources={candidates.sources}
-              catalystSymbols={catalystSymbols}
-              refreshing={refreshing}
-              onOpenDetail={openDetail}
-              onRefresh={() => void refreshAll()}
-            />
-            <SmallCapAbsorptionPanel
-              items={candidates.items}
-              sources={candidates.sources}
-              refreshing={refreshing}
-              onOpenDetail={openDetail}
-              onRefresh={() => void refreshAll()}
-            />
-            <ImportantNews items={morningReport?.important_news ?? []} onReadNewspaper={() => openNewspaper()} />
+            <div className="research-overview-grid">
+              <MorningReportPanel
+                report={morningReport}
+                error={morningError}
+                refreshing={refreshing}
+                onOpenDetail={openDetail}
+                onRefresh={() => void refreshAll()}
+              />
+              <ImportantNews items={morningReport?.important_news ?? []} onReadNewspaper={() => openNewspaper()} />
+            </div>
+            <MarketLinePanel snapshot={marketLine} error={marketLineError} />
+            <div className="research-strategy-grid">
+              <StrategyPanel
+                items={candidates.items}
+                sources={candidates.sources}
+                catalystSymbols={catalystSymbols}
+                marketLineTags={candidateMarketLineTags}
+                refreshing={refreshing}
+                onOpenDetail={openDetail}
+                onRefresh={() => void refreshAll()}
+              />
+              <SmallCapAbsorptionPanel
+                items={candidates.items}
+                sources={candidates.sources}
+                marketLineTags={candidateMarketLineTags}
+                refreshing={refreshing}
+                onOpenDetail={openDetail}
+                onRefresh={() => void refreshAll()}
+              />
+            </div>
           </div>
           {candidateError && <p className="source-alert strategy-source-error" role="alert">个人策略：{candidateError}</p>}
           <footer className="research-footer">本模块仅用于研究，不构成投资建议 · 仅覆盖 A 股主板</footer>

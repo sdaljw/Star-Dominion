@@ -159,6 +159,60 @@ export type ResearchSourceEvidence = {
   factors?: Record<string, number | boolean | string>;
 };
 
+export type MarketEnvironment = {
+  label: "偏弱" | "中性" | "偏强" | "暂无数据";
+  advancing: number;
+  declining: number;
+  flat: number;
+  limit_up_count: number;
+};
+
+export type MarketLineMember = {
+  symbol: string;
+  name: string;
+  pct: number;
+  consecutive_boards: number;
+  market_cap_yuan: number;
+};
+
+export type MarketLineEntry = {
+  name: string;
+  code: string;
+  source_rank: number;
+  score: number;
+  label: "持续主线" | "主线候选" | "快速轮动" | "观察";
+  rank: number;
+  pct: number;
+  turnover_yi: number;
+  up_count: number;
+  down_count: number;
+  breadth_score: number;
+  persistence_count: number;
+  ladder_score: number;
+  activity_score: number;
+  ladder_tiers: Record<string, number>;
+  known_bar_count: number;
+  eligible_small_cap_count: number;
+  eligible_member_symbols: string[];
+  members: MarketLineMember[];
+};
+
+export type MarketLineSnapshot = {
+  status: "fresh" | "stale" | "unavailable";
+  as_of_date: string | null;
+  generated_at: string | null;
+  source: string | null;
+  market_environment: MarketEnvironment;
+  hot_concept_ranks: Record<string, number>;
+  lines: MarketLineEntry[];
+};
+
+export type MarketLineTag = {
+  name: string;
+  label: Exclude<MarketLineEntry["label"], "观察">;
+  rank: number;
+};
+
 export type StockResearchContext = {
   symbol: string;
   name: string;

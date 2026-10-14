@@ -3,11 +3,12 @@ import json
 from pathlib import Path
 import sys
 from types import SimpleNamespace
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
 
-from workers.ths_hot_concepts import StockSeedData
+from workers.ths_hot_concepts import ConceptMember, ConceptSnapshot, StockSeedData
 from workers.user_strategy_snapshot import (
     DEFAULT_TOP_CONCEPTS,
     StockSeed,
@@ -16,6 +17,7 @@ from workers.user_strategy_snapshot import (
     collect_small_cap_stock_pool,
     load_history_with_fallback,
     normalize_history,
+    refresh_market_line_history,
     write_snapshot_atomic,
 )
 
@@ -35,6 +37,17 @@ class FakeFrame:
 
 def test_default_concept_scope_covers_many_hot_ths_themes() -> None:
     assert DEFAULT_TOP_CONCEPTS == 30
+
+
+@pytest.mark.parametrize("hour,expected", [(6, ["2026-09-10"]), (7, ["2026-09-10", "2026-09-11"])])
+def test_small_cap_snapshot_excludes_unfinished_or_future_daily_bars(hour, expected):
+    pool = {"600001": StockSeed(symbol="600001", name="样本", concepts=[], market_cap=1e9)}
+    frame = FakeFrame([{"日期": day, "开盘": 10, "最高": 11, "最低": 9,
+                        "收盘": 10.5, "成交量": 100}
+                       for day in ["2026-09-10", "2026-09-11", "2026-09-14"]])
+    result = build_snapshot({}, lambda _: frame, datetime(2026, 9, 11, hour, tzinfo=UTC),
+                            min_bars=1, small_cap_pool=pool)
+    assert [bar["date"] for bar in result["small_cap_stocks"][0]["bars"]] == expected
 
 
 def test_normalize_history_maps_akshare_columns_and_computes_missing_pct() -> None:
@@ -83,6 +96,87 @@ def test_collect_small_cap_stock_pool_calls_spot_once_and_filters_board_cap_and_
     assert list(pool) == ["000001"]
     assert pool["000001"].market_cap == 9_000_000_000
     assert akshare.spot_calls == 1
+
+
+def test_collect_small_cap_stock_pool_captures_mainboard_market_breadth() -> None:
+    class FakeAkshare:
+        def stock_zh_a_spot_em(self) -> FakeFrame:
+            return FakeFrame(
+                [
+                    {"代码": "000001", "名称": "上涨", "总市值": 9e9, "涨跌幅": 2.0},
+                    {"代码": "600001", "名称": "下跌", "总市值": 11e9, "涨跌幅": -1.0},
+                    {"代码": "000002", "名称": "平盘", "总市值": 5e9, "涨跌幅": 0.0},
+                    {"代码": "600002", "名称": "涨停", "总市值": 5e9, "涨跌幅": 10.0},
+                    {"代码": "300001", "名称": "创业板", "总市值": 5e9, "涨跌幅": 5.0},
+                    {"代码": "600003", "名称": "ST样本", "总市值": 5e9, "涨跌幅": 5.0},
+                ]
+            )
+
+    breadth: dict[str, int] = {}
+    collect_small_cap_stock_pool(FakeAkshare(), breadth_output=breadth)
+
+    assert breadth == {
+        "advancing": 2,
+        "declining": 1,
+        "flat": 1,
+        "limit_up_count": 1,
+        "quote_count": 4,
+    }
+
+
+def test_market_line_history_requires_post_close_complete_same_day_sources(tmp_path: Path) -> None:
+    output = tmp_path / "latest.json"
+    concepts = [
+        ConceptSnapshot(
+            name="机器人",
+            code="THS001",
+            pct=4.0,
+            turnover_yi=100.0,
+            up_count=70,
+            down_count=30,
+            members=(ConceptMember(symbol="600001", name="样本", pct=10.0),),
+            hot_rank=1,
+            acquired_at=datetime(2026, 9, 24, 15, 0, tzinfo=ZoneInfo("Asia/Shanghai")),
+        )
+    ]
+    rows = [{
+        "symbol": "600001",
+        "name": "样本",
+        "market_cap": 5e9,
+        "bars": [{
+            "date": "2026-09-24", "open": 10.0, "high": 11.0,
+            "low": 9.9, "close": 11.0, "pct": 10.0, "volume": 1000,
+        }],
+    }]
+    breadth = {"advancing": 70, "declining": 30, "flat": 0, "limit_up_count": 10, "quote_count": 100}
+
+    before_close = refresh_market_line_history(
+        output, concepts, rows, breadth,
+        datetime(2026, 9, 24, 14, 59, tzinfo=ZoneInfo("Asia/Shanghai")),
+    )
+    saved = refresh_market_line_history(
+        output, concepts, rows, breadth,
+        datetime(2026, 9, 24, 15, 1, tzinfo=ZoneInfo("Asia/Shanghai")),
+    )
+    old_bar_rows = [{
+        **rows[0],
+        "bars": [{**rows[0]["bars"][0], "date": "2026-09-23"}],
+    }]
+    old_bar = refresh_market_line_history(
+        output, concepts, old_bar_rows, breadth,
+        datetime(2026, 9, 24, 16, 0, tzinfo=ZoneInfo("Asia/Shanghai")),
+    )
+    missing_concepts = refresh_market_line_history(
+        output, [], rows, breadth,
+        datetime(2026, 9, 24, 16, 0, tzinfo=ZoneInfo("Asia/Shanghai")),
+    )
+
+    assert before_close is None
+    assert saved is not None and saved.as_of_date.isoformat() == "2026-09-24"
+    assert saved.market_environment.label == "偏强"
+    assert old_bar is None
+    assert missing_concepts is None
+    assert (tmp_path / "market-line-history.json").exists()
 
 
 def test_build_snapshot_filters_non_main_board_and_st_stocks() -> None:
@@ -140,7 +234,7 @@ def test_build_snapshot_separates_original_and_small_cap_sections() -> None:
     payload = build_snapshot(
         pool,
         lambda _: frame,
-        datetime(2026, 7, 21, tzinfo=UTC),
+        datetime(2026, 7, 21, 8, tzinfo=UTC),
         min_bars=2,
         small_cap_pool=small_cap_pool,
     )

@@ -158,12 +158,38 @@ export interface AICatalogRepository { id: string; fullName: string; htmlUrl: st
 export interface AICatalogResponse { category: string; items: AICatalogRepository[]; updatedAt: string | null; }
 export interface NewsItemPublic { id: string; sourceId: string; canonicalUrl: string; title: string; summary: string | null; publishedAt: string; authorOrPublisher: string | null; topics: string[]; importanceScore: number; status: string; }
 export interface NewsPage { items: NewsItemPublic[]; nextCursor: string | null; }
+export interface XEventSummaryEvent { title: string; summary: string; importance: number; postIds: string[]; }
+export interface XEventPostReference { provider: string; externalId: string; }
+export interface XEventReport {
+  id: string;
+  status: string;
+  modelProvider: string;
+  modelName: string;
+  title: string;
+  summary: string;
+  events: XEventSummaryEvent[];
+  risks: string[];
+  postIds: XEventPostReference[];
+  receivedAt: string;
+}
+export interface XEventPost {
+  provider: string;
+  externalId: string;
+  author: string;
+  username: string;
+  text: string;
+  canonicalUrl: string;
+  publishedAt: string;
+  importance: number;
+}
+export interface XEventReportResponse { report: XEventReport | null; posts: XEventPost[]; }
 export interface BriefingEvent { sourceId?: string; title?: string; summary?: string; url?: string; [key: string]: unknown; }
 export interface BriefingPublic { id: string; reportDate: string; windowStart: string; windowEnd: string; status: string; modelProvider: string | null; modelName: string | null; title: string | null; summaryMarkdown: string | null; events: BriefingEvent[]; risks: string[]; sourceIds: string[]; generatedAt: string | null; errorMessage: string | null; }
 
 export const getAICatalog = (category = 'all'): Promise<AICatalogResponse> => reportRequest(`/ai/rankings?category=${encodeURIComponent(category)}`);
 export const getNewsItems = (window = '24h', topic?: string): Promise<NewsPage> => { const params = new URLSearchParams({ window }); if (topic) params.set('topic', topic); return reportRequest(`/news?${params.toString()}`); };
 export const getSocialEvents = (window = '24h'): Promise<NewsPage> => reportRequest(`/news/social-events?window=${encodeURIComponent(window)}`);
+export const getLatestXEventReport = (): Promise<XEventReportResponse> => reportRequest('/x-events/latest');
 export const getLatestBriefing = (): Promise<BriefingPublic> => reportRequest('/briefings/latest');
 export const collectNews = (): Promise<CollectionRun> => reportRequest('/admin/collections/news', { method: 'POST' });
 export const generateBriefing = (): Promise<CollectionRun> => reportRequest('/admin/briefings/generate', { method: 'POST' });

@@ -15,6 +15,9 @@ from app.domain.strategies import (
     evaluate_stock_strategies,
 )
 from app.integrations.catalyst_reports import CatalystMorningReportAdapter, CatalystReportError
+from app.domain.probe_sector import build_probe_sector_context
+from app.domain.small_cap_entry import build_small_cap_entry_gate
+from app.repositories.market_lines import MarketLineHistoryRepository
 
 
 class CandidateSourceError(RuntimeError):
@@ -134,6 +137,10 @@ class SmallCapAbsorptionSnapshotSource:
             raise CandidateSourceError("小市值快照结构错误：缺少 small_cap_stocks")
         generated_at = _parse_datetime(raw.get("small_cap_generated_at") or raw.get("generated_at"))
         items: list[CandidateStock] = []
+        try:
+            sector_history = MarketLineHistoryRepository(self._path.with_name("market-line-history.json")).load()
+        except (OSError, ValueError):
+            sector_history = []
 
         for row in raw["small_cap_stocks"]:
             if not isinstance(row, dict):
@@ -145,6 +152,8 @@ class SmallCapAbsorptionSnapshotSource:
             result = evaluate_small_cap_absorption(stock)
             if not result.matched:
                 continue
+            result.factors.update(build_probe_sector_context(stock, result.factors, sector_history))
+            result.factors.update(build_small_cap_entry_gate(result.factors))
             try:
                 item = CandidateStock.create(
                     symbol=stock.symbol,
