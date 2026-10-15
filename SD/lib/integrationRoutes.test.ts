@@ -45,4 +45,21 @@ describe('independent module integration', () => {
     expect(dockSource).toContain('overflow-hidden');
     expect(dockSource).not.toContain('overflow-y-auto');
   });
+
+  it('places the global cloud alarm settings in the eighth UM980 grid cell', () => {
+    const panelSource = source('../pages/stm32/Um980Panel.tsx');
+    expect(panelSource).toContain('AlarmSettingsCard');
+    expect(panelSource).toContain('grid grid-cols-4');
+  });
+
+  it('loads and saves cloud alarm settings through the shared API', () => {
+    const windowSource = source('../pages/Stm32Window.tsx');
+    expect(windowSource).toContain('/alarm-settings');
+    expect(windowSource).toContain("method: 'PUT'");
+    expect(windowSource).toContain("'Content-Type': 'application/json'");
+    expect(windowSource).not.toContain('localStorage');
+    expect(windowSource).not.toContain("from './stm32/AlertStack'");
+    expect(windowSource).toContain('alarmSettingsRevisionRef');
+    expect(windowSource).toContain('alarm_settings_revision');
+  });
 });

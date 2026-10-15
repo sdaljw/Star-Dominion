@@ -1,4 +1,4 @@
-import type { AlarmData, DeviceRecord, DeviceMessage, GnggaData, ImuData } from './types';
+import type { AlarmCondition, AlarmData, AlarmMetric, DeviceRecord, DeviceMessage, GnggaData, ImuData } from './types';
 
 export const QUALITY_COLORS: Record<string, string> = {
   '0': '#94a3b8',
@@ -127,6 +127,30 @@ export function normalizeVector(value: unknown, fallback: [number, number, numbe
 export function normalizeAlarm(value: unknown): AlarmData | null {
   if (!value || typeof value !== 'object') return null;
   const source = value as Record<string, unknown>;
+  const metric = ['acc_x', 'acc_y', 'angle_x', 'angle_y', 'angle_z'].includes(String(source.metric))
+    ? String(source.metric) as AlarmMetric
+    : undefined;
+  const conditions: AlarmCondition[] = Array.isArray(source.conditions)
+    ? source.conditions.flatMap((item) => {
+      if (!item || typeof item !== 'object') return [];
+      const condition = item as Record<string, unknown>;
+      const conditionMetric = ['acc_x', 'acc_y', 'angle_x', 'angle_y', 'angle_z'].includes(String(condition.metric))
+        ? String(condition.metric) as AlarmMetric
+        : null;
+      const valueNumber = nullableNumber(condition.value);
+      const absoluteNumber = nullableNumber(condition.absolute_value);
+      const thresholdNumber = nullableNumber(condition.threshold);
+      if (!conditionMetric || valueNumber === null || absoluteNumber === null || thresholdNumber === null) return [];
+      return [{
+        metric: conditionMetric,
+        label: typeof condition.label === 'string' ? condition.label : conditionMetric,
+        value: valueNumber,
+        absolute_value: absoluteNumber,
+        threshold: thresholdNumber,
+        ...(typeof condition.unit === 'string' ? { unit: condition.unit } : {}),
+      }];
+    })
+    : [];
   return {
     level: String(source.level ?? 'NORMAL'),
     score: asFiniteNumber(source.score, 0),
@@ -139,6 +163,16 @@ export function normalizeAlarm(value: unknown): AlarmData | null {
     accDyn: asFiniteNumber(source.accDyn, 0),
     q: Math.max(0, Math.round(asFiniteNumber(source.q, 0))),
     sats: Math.max(0, Math.round(asFiniteNumber(source.sats, 0))),
+    ...(typeof source.source === 'string' ? { source: source.source } : {}),
+    ...(metric ? { metric } : {}),
+    ...(typeof source.label === 'string' ? { label: source.label } : {}),
+    ...(nullableNumber(source.value) !== null ? { value: nullableNumber(source.value) as number } : {}),
+    ...(nullableNumber(source.absolute_value) !== null ? { absolute_value: nullableNumber(source.absolute_value) as number } : {}),
+    ...(nullableNumber(source.threshold) !== null ? { threshold: nullableNumber(source.threshold) as number } : {}),
+    ...(typeof source.unit === 'string' ? { unit: source.unit } : {}),
+    ...(conditions.length > 0 ? { conditions } : {}),
+    ...(typeof source.message === 'string' ? { message: source.message } : {}),
+    ...(nullableNumber(source.triggered_at_ms) !== null ? { triggered_at_ms: nullableNumber(source.triggered_at_ms) as number } : {}),
   };
 }
 
@@ -177,9 +211,8 @@ export function normalizeDevice(id: string, value: unknown): DeviceRecord {
   const qualityCode = String(source.quality_code ?? source.qualityCode ?? parsedGngga?.quality_code ?? '0');
   const sourceSatellites = source.satellites === undefined ? null : nullableNumber(source.satellites);
   const satellites = Math.max(0, Math.round(sourceSatellites ?? parsedGngga?.satellites ?? 0));
-  const alarmPayload = payloads.find((message) => message.startsWith('ALARM:'));
   const sourceImu = source.imu && typeof source.imu === 'object' ? source.imu : {};
-  const alarm = normalizeAlarm(source.alarm) || (alarmPayload ? parseAlarm(alarmPayload) : null);
+  const alarm = normalizeAlarm(source.alarm);
   const quality = String(source.quality ?? parsedGngga?.quality ?? source.rtk_status ?? QUALITY_NAMES[qualityCode] ?? '等待数据');
 
   return {

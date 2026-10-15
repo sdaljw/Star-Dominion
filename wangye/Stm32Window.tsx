@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Activity, Radio, Satellite } from 'lucide-react';
-import { AlertStack } from './stm32/AlertStack';
 import { CommandPanel } from './stm32/CommandPanel';
 import { LeftTelemetryDock } from './stm32/LeftTelemetryDock';
 import { MapSurface } from './stm32/MapSurface';
 import { NmeaPanel } from './stm32/NmeaPanel';
 import { NotificationPanel } from './stm32/NotificationPanel';
-import type { DeviceMessage, DeviceRecord, DisplacementPoint, LogEntry, MapTheme, NotificationItem } from './stm32/types';
+import { EMPTY_ALARM_SETTINGS, normalizeAlarmSettings } from './stm32/alarmSettings';
+import type { AlarmSettings, DeviceMessage, DeviceRecord, DisplacementPoint, LogEntry, MapTheme, NotificationItem } from './stm32/types';
 import {
   formatLogTime,
   isValidMessage,
   normalizeDevice,
-  parseAlarm,
   stripDevicePrefix,
 } from './stm32/telemetry';
 
@@ -23,6 +22,8 @@ export default function Stm32Window() {
   const [isLocked, setIsLocked] = useState(true);
   const [mapTheme, setMapTheme] = useState<MapTheme>('dark');
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [alarmSettings, setAlarmSettings] = useState<AlarmSettings>(EMPTY_ALARM_SETTINGS);
+  const [alarmSettingsSaving, setAlarmSettingsSaving] = useState(false);
   const [dataSource] = useState(() => {
     const path = window.location.pathname.replace(/\/$/, '');
     const basePath = path.includes('/stm32') ? '/stm32' : '';
@@ -32,6 +33,7 @@ export default function Stm32Window() {
   const lastMessageSeqRef = useRef<Record<string, number>>({});
   const previousOnlineByDeviceRef = useRef<Record<string, boolean>>({});
   const alarmSignatureByDeviceRef = useRef<Record<string, string>>({});
+  const alarmSettingsRevisionRef = useRef(0);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -44,6 +46,51 @@ export default function Stm32Window() {
   const addNotification = useCallback((msg: string, type: NotificationItem['type']) => {
     setNotifications((previous) => [{ msg, type, time: formatLogTime(Date.now()) }, ...previous.slice(0, 49)]);
   }, []);
+
+  const acceptAlarmSettings = useCallback((value: unknown, revisionValue: unknown) => {
+    const parsedRevision = Number(revisionValue);
+    const revision = Number.isFinite(parsedRevision) && parsedRevision >= 0 ? parsedRevision : 0;
+    if (revision < alarmSettingsRevisionRef.current) return;
+    alarmSettingsRevisionRef.current = revision;
+    setAlarmSettings(normalizeAlarmSettings(value));
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    const loadAlarmSettings = async () => {
+      try {
+        const response = await fetch(`${dataSource}/alarm-settings`);
+        if (!response.ok) throw new Error('alarm settings request failed');
+        const payload = await response.json();
+        if (alive) acceptAlarmSettings(payload?.settings, payload?.revision ?? payload?.updated_at_ms);
+      } catch {
+        if (alive) addNotification('云端预警设置加载失败，将使用未启用状态', 'warning');
+      }
+    };
+    void loadAlarmSettings();
+    return () => { alive = false; };
+  }, [acceptAlarmSettings, addNotification, dataSource]);
+
+  const saveAlarmSettings = useCallback(async (nextSettings: AlarmSettings): Promise<boolean> => {
+    setAlarmSettingsSaving(true);
+    try {
+      const response = await fetch(`${dataSource}/alarm-settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nextSettings),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.message || 'alarm settings update failed');
+      acceptAlarmSettings(payload?.settings ?? nextSettings, payload?.revision ?? payload?.updated_at_ms);
+      addNotification('云端预警标准已保存，所有设备立即生效', 'success');
+      return true;
+    } catch {
+      addNotification('云端预警标准保存失败，请检查网络或输入值', 'error');
+      return false;
+    } finally {
+      setAlarmSettingsSaving(false);
+    }
+  }, [acceptAlarmSettings, addNotification, dataSource]);
 
   const handlePositionChange = useCallback((device: DeviceRecord, previous: { latitude: number; longitude: number; altitude: number | null } | null) => {
     if (!previous || device.latitude === null || device.longitude === null) return;
@@ -88,21 +135,21 @@ export default function Stm32Window() {
       if (!message || !isValidMessage(message)) return;
 
       const timestamp = item.server_timestamp || device.server_timestamp || Date.now();
-      const parsedAlarm = message.startsWith('ALARM:') ? parseAlarm(message) : null;
-      const alarm = parsedAlarm || device.alarm;
+      const alarm = device.alarm;
       if (!alarm || ['NORMAL', 'GREEN'].includes(alarm.level)) {
         delete alarmSignatureByDeviceRef.current[device.device_id];
       } else {
-        const signature = [device.device_id, alarm.level, alarm.score, alarm.D, alarm.V, alarm.tilt].join('|');
+        const conditionSignature = (alarm.conditions || [])
+          .map((condition) => `${condition.metric}:${condition.absolute_value}:${condition.threshold}`)
+          .join(',');
+        const signature = [device.device_id, alarm.source, alarm.metric, alarm.absolute_value, alarm.threshold, conditionSignature].join('|');
         if (alarmSignatureByDeviceRef.current[device.device_id] !== signature) {
           alarmSignatureByDeviceRef.current[device.device_id] = signature;
-          addNotification(`[设备 ${device.device_id}] ${alarm.level} 预警 | 风险 ${alarm.score} | 位移 ${alarm.D} mm | 倾角 ${alarm.tilt}°`, alarm.level === 'RED' ? 'error' : 'warning');
+          addNotification(`[设备 ${device.device_id}] ${alarm.message || alarm.label || '云端阈值预警'}`, alarm.level === 'RED' ? 'error' : 'warning');
         }
       }
 
-      const logText = parsedAlarm
-        ? `⚠️ [设备 ${device.device_id}] ${parsedAlarm.level} | 风险:${parsedAlarm.score} | 位移:${parsedAlarm.D}mm | 倾角:${parsedAlarm.tilt}°`
-        : `[设备 ${device.device_id}] ${message}`;
+      const logText = `[设备 ${device.device_id}] ${message}`;
       const logEntry: LogEntry = { deviceId: device.device_id, seq: item.seq, text: logText, timestamp };
       setLogsByDevice((current) => {
         const existing = current[device.device_id] || [];
@@ -112,6 +159,9 @@ export default function Stm32Window() {
     };
 
     const handlePayload = (json: any) => {
+      if (json?.alarm_settings && typeof json.alarm_settings === 'object') {
+        acceptAlarmSettings(json.alarm_settings, json.alarm_settings_revision ?? json.alarm_settings_updated_at_ms);
+      }
       const hasDevicesSnapshot = Boolean(json && json.devices && typeof json.devices === 'object' && !Array.isArray(json.devices));
       const entries: [string, unknown][] = hasDevicesSnapshot
         ? Object.entries(json.devices)
@@ -121,6 +171,9 @@ export default function Stm32Window() {
       const normalizedDevices = entries.reduce<Record<string, DeviceRecord>>((result, [id, value]) => {
         const device = normalizeDevice(id, value);
         result[device.device_id] = device;
+        if (!device.alarm || ['NORMAL', 'GREEN'].includes(device.alarm.level)) {
+          delete alarmSignatureByDeviceRef.current[device.device_id];
+        }
         return result;
       }, {});
 
@@ -190,7 +243,7 @@ export default function Stm32Window() {
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
       if (fallbackInterval) clearInterval(fallbackInterval);
     };
-  }, [addNotification, dataSource]);
+  }, [acceptAlarmSettings, addNotification, dataSource]);
 
   useEffect(() => {
     if (selectedDeviceId && devices[selectedDeviceId]) return;
@@ -264,9 +317,10 @@ export default function Stm32Window() {
         selectedDeviceId={selectedDeviceId}
         onSelectDevice={setSelectedDeviceId}
         displacementHistory={selectedDisplacement}
+        alarmSettings={alarmSettings}
+        alarmSettingsSaving={alarmSettingsSaving}
+        onSaveAlarmSettings={saveAlarmSettings}
       />
-      <AlertStack devices={devices} />
-
       <aside className="pointer-events-auto absolute inset-y-0 right-0 z-20 flex w-[min(370px,calc(100vw-24px))] flex-col gap-3 overflow-y-auto border-l border-cyan-400/20 bg-[#041426]/82 p-3 shadow-[-12px_0_40px_rgba(0,0,0,0.28)] backdrop-blur-xl">
         <div className="flex items-center justify-between px-1 py-1">
           <div>

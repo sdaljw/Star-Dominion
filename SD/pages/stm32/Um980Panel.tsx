@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Activity, MapPin, Satellite, Thermometer, Waves } from 'lucide-react';
 import { DeviceSelector } from './DeviceSelector';
-import type { DeviceRecord } from './types';
+import { AlarmSettingsCard } from './AlarmSettingsCard';
+import type { AlarmSettings, DeviceRecord } from './types';
 import { formatDataAge } from './telemetry';
 
 interface Um980PanelProps {
@@ -9,6 +10,9 @@ interface Um980PanelProps {
   device: DeviceRecord | null;
   selectedDeviceId: string | null;
   onSelectDevice: (deviceId: string) => void;
+  alarmSettings: AlarmSettings;
+  alarmSettingsSaving: boolean;
+  onSaveAlarmSettings: (settings: AlarmSettings) => Promise<boolean>;
 }
 
 interface MetricCardProps {
@@ -30,7 +34,7 @@ function MetricCard({ label, value, accent, icon }: MetricCardProps) {
   );
 }
 
-export function Um980Panel({ devices, device, selectedDeviceId, onSelectDevice }: Um980PanelProps) {
+export function Um980Panel({ devices, device, selectedDeviceId, onSelectDevice, alarmSettings, alarmSettingsSaving, onSaveAlarmSettings }: Um980PanelProps) {
   const metrics = [
     { label: '经度', value: device?.longitude === null || device?.longitude === undefined ? '--' : `${device.longitude.toFixed(7)}°`, accent: '#67e8f9', icon: <MapPin className="h-3 w-3 text-cyan-300" /> },
     { label: '纬度', value: device?.latitude === null || device?.latitude === undefined ? '--' : `${device.latitude.toFixed(7)}°`, accent: '#67e8f9', icon: <MapPin className="h-3 w-3 text-cyan-300" /> },
@@ -58,6 +62,7 @@ export function Um980Panel({ devices, device, selectedDeviceId, onSelectDevice }
       </div>
       <div className="grid grid-cols-4 gap-1.5">
         {metrics.map((metric) => <MetricCard key={metric.label} {...metric} />)}
+        <AlarmSettingsCard settings={alarmSettings} alarm={device?.alarm || null} saving={alarmSettingsSaving} onSave={onSaveAlarmSettings} />
       </div>
     </section>
   );

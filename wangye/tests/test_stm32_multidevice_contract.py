@@ -70,7 +70,6 @@ def test_screen_uses_componentized_dashboard_and_shared_selection():
     for token in (
         "./stm32/MapSurface",
         "./stm32/LeftTelemetryDock",
-        "./stm32/AlertStack",
         "./stm32/CommandPanel",
         "./stm32/NmeaPanel",
         "./stm32/NotificationPanel",
@@ -88,10 +87,12 @@ def test_screen_uses_componentized_dashboard_and_shared_selection():
         assert 'onSelectDevice' in component
 
 
-def test_um980_contract_has_seven_fields_without_quality_q():
+def test_um980_contract_has_eight_cells_without_quality_q():
     um980 = read_component('Um980Panel.tsx')
     for token in ("经度", "纬度", "海拔", "定位状态", "卫星数", "温度", "湿度"):
         assert token in um980
+    assert 'AlarmSettingsCard' in um980
+    assert 'grid grid-cols-4' in um980
     assert "质量 q" not in um980
 
 
@@ -105,8 +106,9 @@ def test_nmea_logs_use_stored_timestamps_not_render_time():
     assert "new Date().toLocaleTimeString" not in nmea
 
 
-def test_page_has_map_surface_and_alert_stack():
+def test_page_has_map_surface_and_cloud_alarm_settings_without_top_left_overlay():
     source = read_source()
     assert "MapSurface" in source
-    assert "AlertStack" in source
+    assert "alarm-settings" in source
+    assert "AlertStack" not in source
     assert "质量 q" not in source

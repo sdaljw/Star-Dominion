@@ -10,8 +10,9 @@
 - 每台设备在地图上显示独立标记和轨迹。
 - 点击地图标记后，左侧面板同步切换到该设备。
 - 所有设备选择器共用一个当前设备：UM980、IMU、XYZ 位移、指令下发和 NMEA 监视器会同步切换。
-- UM980 面板显示 7 项：经度、纬度、海拔、定位状态、卫星数、温度、湿度。
-- 报警以左侧面板旁的弹窗堆叠显示，不使用旧的常驻报警卡片。
+- UM980 面板使用 8 个位置：经度、纬度、海拔、定位状态、卫星数、温度、湿度，以及云端预警设置。
+- 预警由云端根据 JY901S 加速度 X/Y 和姿态角 X/Y/Z 的全局阈值计算，设备上报的旧 `ALARM:` 文本不会直接触发网页报警。
+- 左侧数据栏固定在一个视口内，不使用纵向滚动，也不显示旧的左上角常驻报警卡片。
 - NMEA/原始数据日志保存服务端接收时间，不会因为前端轮询而刷新旧日志时间。
 - 指令只发送给当前选中的在线设备，不会广播给其他设备。
 
@@ -25,10 +26,12 @@ wangye/
 ├─ stm32/
 │  ├─ MapSurface.tsx         # 高德地图、设备标记、轨迹和地图操作
 │  ├─ LeftTelemetryDock.tsx  # 左侧数据栏
-│  ├─ Um980Panel.tsx         # UM980 七项数据
+│  ├─ Um980Panel.tsx         # UM980 八格数据和预警入口
+│  ├─ AlarmSettingsCard.tsx  # 全局云端预警设置弹窗
+│  ├─ alarmSettings.ts       # 阈值归一化和启用状态
 │  ├─ ImuPanel.tsx           # IMU 数据
 │  ├─ DisplacementPanel.tsx  # XYZ 三轴位移曲线
-│  ├─ AlertStack.tsx         # 多设备报警弹窗
+│  ├─ AlertStack.tsx         # 旧组件，保留但新页面不渲染
 │  ├─ CommandPanel.tsx       # 指令下发
 │  ├─ NmeaPanel.tsx           # 原始数据/NMEA 监视器
 │  ├─ NotificationPanel.tsx  # 系统通知
@@ -53,7 +56,8 @@ STM32/4G 模块
    4G.py
       ├─ GET /data       ─────┐
       ├─ WebSocket /ws       ├─ 网站前端 Stm32Window
-      └─ GET /send_cmd  ◄────┘
+      ├─ GET /send_cmd  ◄────┘
+      └─ GET/PUT /alarm-settings ◄── 全局预警标准
 ```
 
 默认端口：
@@ -324,6 +328,31 @@ TEMP: 23.6 C HUM: 58.4 %RH
 
 WebSocket 推送与 `/data` 相同结构的设备快照。前端同时保留每秒一次的 `/data` 轮询作为断线或推送异常时的兜底，因此不要在网站代理层关闭 WebSocket Upgrade。
 
+### `GET /alarm-settings`
+
+读取所有用户共用的云端预警标准：
+
+```json
+{
+  "settings": {
+    "acc_x": 0.8,
+    "acc_y": null,
+    "angle_x": null,
+    "angle_y": null,
+    "angle_z": 30.0
+  },
+  "updated_at_ms": 1710000000000,
+  "revision": 3
+}
+```
+
+### `PUT /alarm-settings`
+
+保存新的全局标准。五个字段均可填非负数字；留空或传 `null` 表示关闭该项。任意一个已启用字段达到阈值就报警，判断使用绝对值，例如 `-0.85 g` 会触发 `0.8 g`，`-31°` 会触发 `30°`。设置会原子写入 `4G/alarm_settings.json`，服务重启后仍保留；也可以用 `STM32_ALARM_SETTINGS_PATH` 指定保存位置。
+
+保存后会立即重新计算所有设备，并通过 WebSocket 推送给所有打开的页面。
+响应中的 `revision` 用于页面忽略乱序返回的旧设置。
+
 ### `GET /send_cmd`
 
 向指定在线设备发送指令：
@@ -375,6 +404,7 @@ py -m pytest -q
 6. 发送指令后，确认只有选中设备收到数据。
 7. 重复轮询同一条数据，确认 NMEA 旧记录的时间不变化。
 8. 让设备停止上报超过 5 秒，确认它变为离线但最后位置仍保留。
+9. 打开 UM980 第二排第四格“预警设置”，填写任意阈值并保存；确认所有页面使用同一标准，低于全部阈值后报警自动清除。
 
 ### 两台设备测试数据
 

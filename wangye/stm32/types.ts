@@ -16,6 +16,25 @@ export interface ImuData {
   angle: [number, number, number];
 }
 
+export type AlarmMetric = 'acc_x' | 'acc_y' | 'angle_x' | 'angle_y' | 'angle_z';
+
+export interface AlarmSettings {
+  acc_x: number | null;
+  acc_y: number | null;
+  angle_x: number | null;
+  angle_y: number | null;
+  angle_z: number | null;
+}
+
+export interface AlarmCondition {
+  metric: AlarmMetric;
+  label: string;
+  value: number;
+  absolute_value: number;
+  threshold: number;
+  unit?: string;
+}
+
 export interface AlarmData {
   level: string;
   score: number;
@@ -28,6 +47,16 @@ export interface AlarmData {
   accDyn: number;
   q: number;
   sats: number;
+  source?: string;
+  metric?: AlarmMetric;
+  label?: string;
+  value?: number;
+  absolute_value?: number;
+  threshold?: number;
+  unit?: string;
+  conditions?: AlarmCondition[];
+  message?: string;
+  triggered_at_ms?: number;
 }
 
 export interface DeviceMessage {
@@ -84,4 +113,7 @@ export interface DeviceRecord {
 export interface DeviceSnapshot {
   devices: Record<string, Partial<DeviceRecord>>;
   server_timestamp?: number;
+  alarm_settings?: AlarmSettings;
+  alarm_settings_updated_at_ms?: number;
+  alarm_settings_revision?: number;
 }

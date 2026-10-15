@@ -1,5 +1,6 @@
 import importlib.util
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -78,6 +79,11 @@ class MessageFilterTest(unittest.TestCase):
             collection = getattr(self.module, name, None)
             if hasattr(collection, "clear"):
                 collection.clear()
+        self.module.alarm_settings = {
+            key: None for key in self.module.ALARM_SETTING_KEYS
+        }
+        self.module.alarm_settings_updated_at_ms = 0
+        self.module.alarm_settings_revision = 0
 
     @staticmethod
     def _response_parts(result):
@@ -180,15 +186,172 @@ class MessageFilterTest(unittest.TestCase):
         self.assertEqual(state["temperature"], 26.7)
         self.assertEqual(state["humidity"], 41.6)
 
-    def test_expires_stale_alarm_from_device_snapshot(self):
+    def test_device_alarm_message_is_not_used_for_cloud_alarm(self):
         payload = "ALARM: level=YELLOW score=20.0 D=0.00mm V=0.00mm/min E=0.00mm N=0.00mm U=0.00mm tilt=14.82deg accDyn=0.004g q=4 sats=26"
         self.module.apply_device_message("2", payload, "2," + payload, now_ms=1000)
+        snapshot = self.module.build_data_snapshot(now_ms=1000)
+        self.assertIsNone(snapshot["devices"]["2"]["alarm"])
 
-        active_snapshot = self.module.build_data_snapshot(now_ms=5000)
-        self.assertEqual(active_snapshot["devices"]["2"]["alarm"]["level"], "YELLOW")
+    def test_normalize_alarm_settings_defaults_to_disabled(self):
+        self.assertEqual(
+            self.module.normalize_alarm_settings({}),
+            {
+                "acc_x": None,
+                "acc_y": None,
+                "angle_x": None,
+                "angle_y": None,
+                "angle_z": None,
+            },
+        )
 
-        cleared_snapshot = self.module.build_data_snapshot(now_ms=6001)
-        self.assertIsNone(cleared_snapshot["devices"]["2"]["alarm"])
+    def test_normalize_alarm_settings_accepts_finite_non_negative_values(self):
+        result = self.module.normalize_alarm_settings({
+            "acc_x": 0.8,
+            "acc_y": None,
+            "angle_x": 15,
+            "angle_y": 30.5,
+            "angle_z": 90,
+        })
+        self.assertEqual(result["acc_x"], 0.8)
+        self.assertEqual(result["angle_y"], 30.5)
+
+    def test_normalize_alarm_settings_rejects_invalid_values(self):
+        for payload in (
+            {"acc_x": -0.1},
+            {"angle_x": "30"},
+            {"angle_y": float("inf")},
+            {"angle_z": True},
+        ):
+            with self.subTest(payload=payload):
+                with self.assertRaises(ValueError):
+                    self.module.normalize_alarm_settings(payload)
+
+    def test_cloud_alarm_uses_absolute_value_and_or_logic(self):
+        self.module.alarm_settings = {
+            "acc_x": 0.8,
+            "acc_y": 0.8,
+            "angle_x": None,
+            "angle_y": 30.0,
+            "angle_z": None,
+        }
+        state = self.module.create_device_state("2")
+        state["last_seen_ms"] = 1000
+        state["imu"]["acc"] = [-0.85, 0.1, 0.0]
+        state["imu"]["angle"] = [0.0, -31.0, 0.0]
+        state["imu_valid"]["acc"] = True
+        state["imu_valid"]["angle"] = True
+
+        alarm = self.module.evaluate_cloud_alarm(state, now_ms=1000)
+
+        self.assertEqual(alarm["source"], "cloud")
+        self.assertEqual(alarm["metric"], "acc_x")
+        self.assertEqual(len(alarm["conditions"]), 2)
+        self.assertEqual(alarm["conditions"][1]["metric"], "angle_y")
+
+    def test_cloud_alarm_clears_below_threshold_and_when_data_is_stale(self):
+        self.module.alarm_settings = {
+            "acc_x": 0.8,
+            "acc_y": None,
+            "angle_x": None,
+            "angle_y": None,
+            "angle_z": None,
+        }
+        state = self.module.create_device_state("2")
+        state["last_seen_ms"] = 1000
+        state["imu"]["acc"] = [0.9, 0.0, 0.0]
+        state["imu_valid"]["acc"] = True
+
+        self.assertIsNotNone(self.module.evaluate_cloud_alarm(state, now_ms=1000))
+        state["imu"]["acc"][0] = 0.7
+        self.assertIsNone(self.module.evaluate_cloud_alarm(state, now_ms=1000))
+        state["imu"]["acc"][0] = 0.9
+        self.assertIsNone(
+            self.module.evaluate_cloud_alarm(
+                state,
+                now_ms=1000 + self.module.DEVICE_OFFLINE_MS,
+            )
+        )
+
+    def test_zero_threshold_waits_for_real_imu_data(self):
+        self.module.alarm_settings = {
+            "acc_x": 0.0,
+            "acc_y": None,
+            "angle_x": None,
+            "angle_y": None,
+            "angle_z": None,
+        }
+        state = self.module.create_device_state("2")
+        state["last_seen_ms"] = 1000
+        self.assertIsNone(self.module.evaluate_cloud_alarm(state, now_ms=1000))
+
+        self.module.apply_device_message("2", "ACC: 0 0 0 g", now_ms=1100)
+        self.assertIsNotNone(self.module.devices["2"]["alarm"])
+
+    def test_device_alarm_payload_does_not_override_cloud_alarm(self):
+        self.module.alarm_settings = {
+            "acc_x": 0.8,
+            "acc_y": None,
+            "angle_x": None,
+            "angle_y": None,
+            "angle_z": None,
+        }
+        payload = "ALARM: level=RED score=99"
+        self.module.apply_device_message("2", payload, "2," + payload, now_ms=1000)
+        self.assertIsNone(self.module.devices["2"]["alarm"])
+
+    def test_alarm_settings_can_be_saved_and_loaded(self):
+        settings = {
+            "acc_x": 0.8,
+            "acc_y": None,
+            "angle_x": 15.0,
+            "angle_y": None,
+            "angle_z": 90.0,
+        }
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "alarm_settings.json"
+            self.module.save_alarm_settings(settings, path)
+            self.assertEqual(self.module.load_alarm_settings(path), settings)
+
+    def test_get_alarm_settings_returns_disabled_defaults(self):
+        body, status = self._response_parts(self.module.get_alarm_settings())
+        self.assertEqual(status, 200)
+        self.assertEqual(body["settings"]["acc_x"], None)
+
+    def test_put_alarm_settings_persists_and_recalculates_all_devices(self):
+        self.module.apply_device_message("2", "ACC: -0.9 0 0 g", now_ms=self._now_ms())
+        self.module.request = types.SimpleNamespace(
+            get_json=lambda silent=True: {"acc_x": 0.8, "angle_y": 30},
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "alarm_settings.json"
+            with patch.object(self.module, "ALARM_SETTINGS_PATH", path), patch.object(
+                self.module, "push_to_mini_program"
+            ):
+                body, status = self._response_parts(self.module.update_alarm_settings())
+
+        self.assertEqual(status, 200)
+        self.assertEqual(body["settings"]["acc_x"], 0.8)
+        self.assertEqual(body["revision"], 1)
+        self.assertEqual(self.module.devices["2"]["alarm"]["metric"], "acc_x")
+
+    def test_put_alarm_settings_rejects_missing_json_without_mutation(self):
+        self.module.alarm_settings["acc_x"] = 0.8
+        self.module.request = types.SimpleNamespace(
+            get_json=lambda silent=True: None,
+        )
+        body, status = self._response_parts(self.module.update_alarm_settings())
+        self.assertEqual(status, 400)
+        self.assertEqual(self.module.alarm_settings["acc_x"], 0.8)
+
+    def test_put_alarm_settings_rejects_invalid_values_without_mutation(self):
+        self.module.alarm_settings["acc_x"] = 0.8
+        self.module.request = types.SimpleNamespace(
+            get_json=lambda silent=True: {"acc_x": -1},
+        )
+        body, status = self._response_parts(self.module.update_alarm_settings())
+        self.assertEqual(status, 400)
+        self.assertIn("settings", body)
+        self.assertEqual(self.module.alarm_settings["acc_x"], 0.8)
 
     def test_rejects_empty_or_invalid_prefixed_payload(self):
         self.assertIsNone(self.module.parse_device_message("12,"))
@@ -308,6 +471,7 @@ class MessageFilterTest(unittest.TestCase):
         response = self.module.get_data()
         self.assertIn("devices", response)
         self.assertEqual(response["devices"], {})
+        self.assertEqual(response["alarm_settings"], self.module.DEFAULT_ALARM_SETTINGS)
 
     def test_rebinding_same_id_replaces_old_client_and_old_cleanup_is_safe(self):
         old_client = FakeClient()
